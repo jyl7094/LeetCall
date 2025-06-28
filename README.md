@@ -7,24 +7,24 @@
 
 ## Features
 
-- Custom problem lists for LeetCode users  
-- Confidence grading for each problem  
-- Intelligent spaced repetition reminders  
+- Custom problem lists for LeetCode users
+- Confidence grading for each problem
+- Intelligent spaced repetition reminders
 - Convenient popup UI for quick access
 
 ---
 
 ## Tech Stack
 
-- React  
-- Vite  
-- Tailwind CSS  
+- React
+- Vite
+- Tailwind CSS
 - Chrome Extensions API
 
 ---
 
 ## Usage
 
-- Click the extension icon to open the popup.  
-- Manage your LeetCode problem list and track your confidence.  
+- Click the extension icon to open the popup.
+- Manage your LeetCode problem list and track your confidence.
 - Get spaced repetition reminders based on your progress.
