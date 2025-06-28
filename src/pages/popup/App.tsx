@@ -10,7 +10,7 @@ const App = () => {
   const [screen] = useScreenState();
 
   const handleDashboard = () => {
-    const url = chrome.runtime.getURL("src/pages/extension/index.html");
+    const url = chrome.runtime.getURL("src/pages/dashboard/index.html");
     chrome.tabs.create({ url });
   };
 
@@ -35,7 +35,7 @@ const App = () => {
       {renderScreen()}
       <button
         onClick={handleDashboard}
-        className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-2 rounded"
+        className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-2 rounded cursor-pointer"
       >
         Dashboard
       </button>
