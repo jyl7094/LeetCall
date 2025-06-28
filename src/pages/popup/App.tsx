@@ -30,9 +30,11 @@ const App = () => {
   };
 
   return (
-    <div className="w-[350px] flex flex-col antialiased py-4 px-5 gap-1">
+    <div className="w-[350px] flex flex-col antialiased py-4 px-5 gap-1 text-gray-900">
       <Header />
-      {renderScreen()}
+      {/* {renderScreen()} */}
+      {/* <EmptyScreen /> */}
+      {/* <LoadingScreen /> */}
       <button
         onClick={handleDashboard}
         className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-2 rounded cursor-pointer"

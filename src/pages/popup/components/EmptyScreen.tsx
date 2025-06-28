@@ -2,7 +2,7 @@ const EmptyScreen = () => (
   <div className="text-sm text-center px-1 py-8">
     <div className="mb-6">
       👋{" "}
-      <span className="font-semibold text-gray-900">Welcome to LeetCall!</span>
+      <span className="font-semibold">Welcome to LeetCall!</span>
       <br />
       Start building your personalized problem deck.
     </div>
