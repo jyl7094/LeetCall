@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ScreenState } from "@/constants/screenState";
 
-export function useScreenState() {
+export const useScreenState = () => {
   const [screen, setScreen] = useState<ScreenState>(ScreenState.Loading);
 
   useEffect(() => {
@@ -28,4 +28,4 @@ export function useScreenState() {
   }, []);
 
   return [screen, setScreen] as const;
-}
+};
