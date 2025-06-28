@@ -5,6 +5,7 @@ import LoadingScreen from "@/pages/popup/components/LoadingScreen";
 import CompleteScreen from "@/pages/popup/components/CompleteScreen";
 import { useScreenState } from "@/hooks/useScreenState";
 import { ScreenState } from "@/constants/screenState";
+
 const App = () => {
   const [screen] = useScreenState();
 
