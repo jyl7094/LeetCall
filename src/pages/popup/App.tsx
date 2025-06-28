@@ -19,7 +19,7 @@ const App = () => {
   };
 
   return (
-    <div className="w-[350] flex flex-col justify-center items-center antialiased">
+    <div className="w-[350px] flex flex-col justify-center items-center antialiased">
       <div className="flex w-full justify-between items-center px-5 py-2.5 select-none">
         <div className="flex items-center">
           <img src="/icon128.png" className="mr-1.5 pointer-events-none w-5" />
