@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Leetcall",
+  "version": "1.0.0",
+  "description": "A productivity tool for LeetCode. Create a custom list of problems, grade your confidence level, and get intelligent reminders on when to revisit them based on spaced repetition.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "permissions": ["storage", "scripting", "tabs"],
+  "host_permissions": ["https://leetcode.com/*"]
+}
