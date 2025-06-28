@@ -6,6 +6,16 @@ import { resolve } from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        popup: resolve(__dirname, "src/pages/popup/index.html"),
+        options: resolve(__dirname, "src/pages/options/index.html"),
+        extension: resolve(__dirname, "src/pages/extension/index.html"),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
