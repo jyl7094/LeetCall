@@ -32,8 +32,8 @@ const App = () => {
   return (
     <div className="w-[350px] flex flex-col antialiased py-4 px-5 gap-1 text-gray-900">
       <Header />
-      {/* {renderScreen()} */}
-      <EmptyScreen />
+      {renderScreen()}
+      {/* <EmptyScreen /> */}
       {/* <LoadingScreen /> */}
       <button
         onClick={handleDashboard}
