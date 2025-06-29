@@ -23,11 +23,11 @@
     },
     {
       "matches": ["https://leetcode.com/company/*"],
-      "js": ["company-content-script.js"]
+      "js": ["company.js"]
     },
     {
       "matches": ["https://leetcode.com/problem-list/*"],
-      "js": ["problem-list-content-script.js"]
+      "js": ["problemList.js"]
     }
   ],
   "web_accessible_resources": [
