@@ -22,9 +22,10 @@ const EmptyScreen = () => (
         <strong>Add</strong> button next to any title.
       </div>
       <div>
-        👉&nbsp; On a specific problem page, use the <strong>Add</strong> button
-        to add it. Or after solving, just rate your confidence and the extension
-        will add it and schedule your next review automatically.
+        👉&nbsp; Alternatively, on a specific problem page, you can add it with
+        the <strong>Add</strong> button or, once you’ve solved the problem, rate
+        your confidence and the extension will add it and schedule your next
+        review automatically.
       </div>
       <div>
         👉&nbsp; Visit your <strong>Dashboard</strong> anytime to view your
