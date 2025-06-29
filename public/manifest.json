@@ -12,24 +12,9 @@
   "action": {
     "default_popup": "src/pages/popup/index.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["https://leetcode.com/problemset/*"],
-      "js": ["problemset.js"]
-    },
-    {
-      "matches": ["https://leetcode.com/problems/*"],
-      "js": ["problems.js"]
-    },
-    {
-      "matches": ["https://leetcode.com/company/*"],
-      "js": ["company.js"]
-    },
-    {
-      "matches": ["https://leetcode.com/problem-list/*"],
-      "js": ["problemList.js"]
-    }
-  ],
-  "permissions": ["storage", "scripting", "tabs"],
-  "host_permissions": ["https://leetcode.com/*"]
+  "permissions": ["storage", "scripting", "tabs", "webNavigation"],
+  "host_permissions": ["https://leetcode.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

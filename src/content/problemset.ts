@@ -1,14 +1,25 @@
-const targetNode = document.body;
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+function logHelloWorld() {
+  console.log("hello world");
+}
 
-const observer = new MutationObserver(() => {
-  if (debounceTimer) {
-    clearTimeout(debounceTimer);
-  }
-  debounceTimer = setTimeout(() => {
-    console.log("hello — mutations settled");
-    // Your logic here
-  }, 300);
-});
+function observePage() {
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          logHelloWorld();
+        }
+      }
+    }
+  });
 
-observer.observe(targetNode, { childList: true, subtree: true });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  // Initial run
+  logHelloWorld();
+}
+
+observePage();

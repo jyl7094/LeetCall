@@ -16,6 +16,7 @@ export default defineConfig({
         problems: resolve(__dirname, "src/content/problems.ts"),
         company: resolve(__dirname, "src/content/company.ts"),
         problemList: resolve(__dirname, "src/content/problem-list.ts"),
+        background: resolve(__dirname, "src/background/background.ts"),
       },
       output: {
         entryFileNames: "[name].js",
