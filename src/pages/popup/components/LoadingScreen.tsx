@@ -1,5 +1,5 @@
 const LoadingScreen = () => (
-  <div className="text-sm text-center text-gray-600 px-6 py-8 max-w-md mx-auto">
+  <div className="text-sm text-center text-gray-600 px-6 py-8">
     <svg
       className="h-6 w-6 mx-auto mb-4 animate-spin"
       viewBox="0 0 24 24"
