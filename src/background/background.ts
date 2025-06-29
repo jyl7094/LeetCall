@@ -2,12 +2,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
   (details) => {
     const url = details.url;
 
-    if (url.startsWith("https://leetcode.com/problems/")) {
-      chrome.scripting.executeScript({
-        target: { tabId: details.tabId },
-        files: ["problems.js"],
-      });
-    } else if (url.startsWith("https://leetcode.com/problemset/")) {
+    if (url.startsWith("https://leetcode.com/problemset/")) {
       chrome.scripting.executeScript({
         target: { tabId: details.tabId },
         files: ["problemset.js"],
@@ -26,5 +21,5 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
   },
   {
     url: [{ hostContains: "leetcode.com" }],
-  }
+  },
 );
