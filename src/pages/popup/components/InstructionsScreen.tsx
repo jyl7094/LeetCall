@@ -1,4 +1,4 @@
-const EmptyScreen = () => (
+const InstructionsScreen = () => (
   <div className="text-sm text-center px-1 py-4">
     <div className="mb-6">
       👋{" "}
@@ -35,4 +35,4 @@ const EmptyScreen = () => (
   </div>
 );
 
-export default EmptyScreen;
+export default InstructionsScreen;

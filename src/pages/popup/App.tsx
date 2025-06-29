@@ -1,5 +1,5 @@
 import Header from "@/pages/popup/components/Header";
-import EmptyScreen from "@/pages/popup/components/EmptyScreen";
+import InstructionsScreen from "@/pages/popup/components/InstructionsScreen";
 import ReviewScreen from "@/pages/popup/components/ReviewScreen";
 import LoadingScreen from "@/pages/popup/components/LoadingScreen";
 import CompleteScreen from "@/pages/popup/components/CompleteScreen";
@@ -18,8 +18,8 @@ const App = () => {
     switch (screen) {
       case ScreenState.Loading:
         return <LoadingScreen />;
-      case ScreenState.Empty:
-        return <EmptyScreen />;
+      case ScreenState.Instructions:
+        return <InstructionsScreen />;
       case ScreenState.Review:
         return <ReviewScreen />;
       case ScreenState.Complete:
@@ -33,7 +33,7 @@ const App = () => {
     <div className="w-[350px] flex flex-col antialiased py-4 px-5 gap-1 text-gray-900">
       <Header />
       {renderScreen()}
-      {/* <EmptyScreen /> */}
+      {/* <InstructionsScreen /> */}
       {/* <LoadingScreen /> */}
       <button
         onClick={handleDashboard}

@@ -1,6 +1,6 @@
 export const ScreenState = {
   Loading: "LOADING",
-  Empty: "EMPTY",
+  Instructions: "INSTRUCTIONS",
   Review: "REVIEW",
   Complete: "COMPLETE",
 } as const;
