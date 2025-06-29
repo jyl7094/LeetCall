@@ -37,7 +37,7 @@ const App = () => {
       {/* <LoadingScreen /> */}
       <button
         onClick={handleDashboard}
-        className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-2 rounded cursor-pointer"
+        className="bg-blue-500 hover:bg-blue-600 text-gray-50 text-xs py-2 rounded cursor-pointer transition-colors duration-200 ease-in-out"
       >
         Dashboard
       </button>
