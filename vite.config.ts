@@ -12,12 +12,15 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, "src/pages/popup/index.html"),
         options: resolve(__dirname, "src/pages/dashboard/index.html"),
-        leetcode: "src/content/leetcode.ts",
+        problemset: resolve(__dirname, "src/content/problemset.ts"),
+        problems: resolve(__dirname, "src/content/problems.ts"),
+        company: resolve(__dirname, "src/content/company.ts"),
+        problemList: resolve(__dirname, "src/content/problem-list.ts"),
       },
       output: {
         entryFileNames: "[name].js",
         chunkFileNames: "[name].js",
-        assetFileNames: "[name].[ext]", // No hashes for assets
+        assetFileNames: "[name].[ext]",
       },
     },
   },

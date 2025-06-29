@@ -9,32 +9,26 @@ const EmptyScreen = () => (
 
     <div className="text-left text-xs leading-relaxed text-gray-600 space-y-4 max-w-md mx-auto">
       <div>
-        👉&nbsp; Go to{" "}
+        👉&nbsp; Visit{" "}
         <a
           href="https://leetcode.com/problemset/all/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:underline"
         >
-          LeetCode Problem Set
-        </a>{" "}
-        and start adding problems to your deck.
+          the LeetCode Problem Set
+        </a>
+        , a company’s list, or a curated list and add problems by clicking the{" "}
+        <strong>Add</strong> button next to any title.
       </div>
       <div>
-        👉&nbsp; Use the <strong>Add</strong> button next to any problem title
-        to include it in your deck.
+        👉&nbsp; On a specific problem page, use the <strong>Add</strong> button
+        to add it. Or after solving, just rate your confidence and the extension
+        will add it and schedule your next review automatically.
       </div>
       <div>
-        👉&nbsp; You’ll also see the <strong>Add</strong> button when viewing a
-        specific problem.
-      </div>
-      <div>
-        👉&nbsp; After solving a problem, you can rate your confidence. This
-        automatically adds it to your deck and sets when you’ll review it.
-      </div>
-      <div>
-        👉&nbsp; Head to your <strong>Dashboard</strong> to view your deck,
-        track progress, delete problems, or customize review intervals.
+        👉&nbsp; Visit your <strong>Dashboard</strong> anytime to view your
+        deck, track progress, remove problems, or adjust reviews.
       </div>
     </div>
   </div>
