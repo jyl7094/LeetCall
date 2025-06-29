@@ -7,14 +7,14 @@ export const useScreenState = () => {
   useEffect(() => {
     chrome.storage.local.get(["problems"], (result) => {
       if (chrome.runtime.lastError) {
-        setScreen(ScreenState.Empty);
+        setScreen(ScreenState.Instructions);
         return;
       }
 
       const problems = result.problems || [];
 
       if (problems.length === 0) {
-        setScreen(ScreenState.Empty);
+        setScreen(ScreenState.Instructions);
         return;
       }
 
