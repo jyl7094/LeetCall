@@ -13,7 +13,6 @@ export default defineConfig({
         popup: resolve(__dirname, "src/pages/popup/index.html"),
         dashboard: resolve(__dirname, "src/pages/dashboard/index.html"),
         problemset: resolve(__dirname, "src/content/problemset.ts"),
-        problems: resolve(__dirname, "src/content/problems.ts"),
         company: resolve(__dirname, "src/content/company.ts"),
         problemList: resolve(__dirname, "src/content/problem-list.ts"),
         background: resolve(__dirname, "src/background/background.ts"),
