@@ -30,12 +30,6 @@
       "js": ["problemList.js"]
     }
   ],
-  "web_accessible_resources": [
-    {
-      "resources": ["icon128.png"],
-      "matches": ["https://leetcode.com/*"]
-    }
-  ],
   "permissions": ["storage", "scripting", "tabs"],
   "host_permissions": ["https://leetcode.com/*"]
 }
