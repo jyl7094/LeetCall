@@ -1,11 +1,11 @@
 const InstructionsScreen = () => (
-  <div className="text-sm text-center px-1 py-4 mb-2">
-    <div className="space-y-2 mb-4">
-      <div className="font-semibold">👋 Welcome to LeetCall!</div>
+  <div className="px-3 py-4 mb-2">
+    <div className="text-center space-y-1.5 mb-3">
+      <div className="text-base font-semibold">👋 Welcome to LeetCall!</div>
       <p>Level up faster with spaced repetition.</p>
     </div>
 
-    <div className="text-left text-xs leading-relaxed text-gray-600 space-y-4">
+    <div className="text-xs leading-relaxed text-gray-700 space-y-4">
       <p>
         🔍&nbsp; Browse{" "}
         <a
@@ -21,9 +21,9 @@ const InstructionsScreen = () => (
       </p>
 
       <p>
-        ⭐&nbsp; On any problem page, click the <strong>LeetCall icon</strong>{" "}
-        to rate your confidence. This adds the problem to your deck and
-        schedules reviews.
+        ⭐&nbsp; On any problem page, click the{" "}
+        <strong>LeetCall extension</strong> to rate your confidence. This adds
+        the problem to your deck and schedules reviews.
       </p>
 
       <p>
