@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScreenState } from "@/constants/screenState";
+import type { Problem } from "@/types/problem";
 
 export const useScreenState = () => {
   const [screen, setScreen] = useState<ScreenState>(ScreenState.Loading);
@@ -20,7 +21,7 @@ export const useScreenState = () => {
 
       const now = Date.now();
       const anyDue = problems.some(
-        (p: any) => p.dueAt && typeof p.dueAt === "number" && p.dueAt <= now
+        (p: Problem) => p.dueAt && typeof p.dueAt === "number" && p.dueAt <= now
       );
 
       setScreen(anyDue ? ScreenState.Review : ScreenState.Complete);
