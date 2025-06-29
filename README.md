@@ -16,10 +16,11 @@
 
 ## Tech Stack
 
-- React
-- Vite
-- Tailwind CSS
-- Chrome Extensions API
+- React: For building a dynamic and responsive user interface.
+- Vite: A fast and efficient build tool for modern web projects.
+- Tailwind CSS: For rapid and streamlined UI styling.
+- TypeScript: Ensuring type safety and enhancing code quality and maintainability.
+- Chrome Extensions API: For seamless integration and functionality within the Chrome browser.
 
 ---
 
