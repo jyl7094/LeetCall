@@ -12,14 +12,16 @@
   "action": {
     "default_popup": "src/pages/popup/index.html"
   },
-  "options_ui": {
-    "page": "src/pages/dashboard/index.html",
-    "open_in_tab": true
-  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["src/content/leetcode.js"]
+    }
+  ],
   "web_accessible_resources": [
     {
       "resources": ["icon128.png"],
-      "matches": ["<all_urls>"]
+      "matches": ["https://leetcode.com/*"]
     }
   ],
   "permissions": ["storage", "scripting", "tabs"],

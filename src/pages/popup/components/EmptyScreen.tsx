@@ -1,5 +1,5 @@
 const EmptyScreen = () => (
-  <div className="text-sm text-center px-1 py-8">
+  <div className="text-sm text-center px-1 py-4">
     <div className="mb-6">
       👋{" "}
       <span className="font-semibold text-gray-900">Welcome to LeetCall!</span>
