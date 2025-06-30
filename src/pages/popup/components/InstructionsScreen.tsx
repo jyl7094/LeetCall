@@ -33,4 +33,5 @@ const InstructionsScreen = () => (
     </div>
   </div>
 );
+
 export default InstructionsScreen;
