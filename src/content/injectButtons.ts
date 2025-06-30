@@ -22,7 +22,8 @@ function insertButtonsIntoProblemSet() {
   }
 
   const rows = document.querySelectorAll(
-    "div.relative.flex.h-full.w-full.cursor-pointer.items-center",
+    // Matches both <div> on problemset/company and <a> on custom lists
+    "div.relative.flex.h-full.w-full.cursor-pointer.items-center, a.relative.flex.h-full.w-full.items-center",
   );
 
   rows.forEach((row) => {
