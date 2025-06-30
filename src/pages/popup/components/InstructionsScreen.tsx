@@ -2,7 +2,10 @@ const InstructionsScreen = () => (
   <div className="px-3 py-4 mb-2">
     <div className="text-center space-y-1.5 mb-3">
       <div className="text-base font-semibold">👋 Welcome to LeetCall!</div>
-      <p>Crack DSA. Remember forever. Train with spaced repetition.</p>
+      <p>
+        Crack DSA. <span className="text-[#ed8b3c] font-semibold">Remember forever.</span> Train
+        with spaced repetition.
+      </p>
     </div>
 
     <div className="text-xs leading-relaxed text-gray-700 space-y-4">
