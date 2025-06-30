@@ -5,7 +5,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     if (url.startsWith("https://leetcode.com/problemset/")) {
       chrome.scripting.executeScript({
         target: { tabId: details.tabId },
-        files: ["problemset.js"],
+        files: ["problemSet.js"],
       });
     } else if (url.startsWith("https://leetcode.com/company/")) {
       chrome.scripting.executeScript({

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { ScreenState } from "@/constants/screenState";
 import type { Problem } from "@/types/problem";
+import { useEffect, useState } from "react";
 
 export const useScreenState = () => {
   const [screen, setScreen] = useState<ScreenState>(ScreenState.Loading);
@@ -13,7 +13,7 @@ export const useScreenState = () => {
 
       // If URL matches LeetCode problem list page, show a different screen
       if (url.startsWith("https://leetcode.com/problems/")) {
-        setScreen(ScreenState.Problem); // or whatever is appropriate
+        setScreen(ScreenState.Problem);
         return;
       }
 
@@ -34,7 +34,7 @@ export const useScreenState = () => {
         const now = Date.now();
         const anyDue = problems.some(
           (p: Problem) =>
-            p.dueAt && typeof p.dueAt === "number" && p.dueAt <= now
+            p.dueAt && typeof p.dueAt === "number" && p.dueAt <= now,
         );
 
         setScreen(anyDue ? ScreenState.Review : ScreenState.Complete);

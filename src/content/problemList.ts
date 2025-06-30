@@ -1,4 +1,4 @@
-function insertButtonsIntoProblemSet() {
+function insertButtonsIntoLeetCodeProblemList() {
   // Inject button styles only once
   if (!document.getElementById("leetcall-button-styles")) {
     const style = document.createElement("style");
@@ -21,9 +21,8 @@ function insertButtonsIntoProblemSet() {
     document.head.appendChild(style);
   }
 
-  const rows = document.querySelectorAll(
-    "div.relative.flex.h-full.w-full.cursor-pointer.items-center",
-  );
+  // Select all problem link elements
+  const rows = document.querySelectorAll('a[href^="/problems/"]');
 
   rows.forEach((row) => {
     if (!(row instanceof HTMLElement)) return;
@@ -52,20 +51,20 @@ function insertButtonsIntoProblemSet() {
   });
 }
 
-// Initial injection on page load
+// Run once on load
 window.addEventListener("load", () => {
-  insertButtonsIntoProblemSet();
-  setTimeout(insertButtonsIntoProblemSet, 1000); // in case of async content
+  insertButtonsIntoLeetCodeProblemList();
+  setTimeout(insertButtonsIntoLeetCodeProblemList, 1000); // Handle late-loading content
 });
 
-// Set up MutationObserver to monitor SPA DOM changes
+// MutationObserver to handle SPA-style updates
 const observer = new MutationObserver(() => {
-  insertButtonsIntoProblemSet();
+  insertButtonsIntoLeetCodeProblemList();
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
 
-// Cleanup to avoid memory leaks
+// Clean up on unload
 window.addEventListener("beforeunload", () => {
   observer.disconnect();
 });
