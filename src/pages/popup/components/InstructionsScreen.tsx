@@ -3,8 +3,9 @@ const InstructionsScreen = () => (
     <div className="text-center space-y-1.5 mb-3">
       <div className="text-base font-semibold">👋 Welcome to LeetCall!</div>
       <p>
-        Crack DSA. <span className="text-[#ed8b3c] font-semibold">Remember forever.</span> Train
-        with spaced repetition.
+        Crack DSA.{" "}
+        <span className="text-[#ed8b3c] font-semibold">Remember forever.</span>{" "}
+        Train with spaced repetition.
       </p>
     </div>
 
