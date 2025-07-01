@@ -8,7 +8,7 @@ const InstructionsScreen = () => (
       </p>
     </div>
 
-    <div className="text-xs leading-relaxed text-gray-700 space-y-4">
+    <div className="leading-relaxed text-gray-700 space-y-4">
       <p>
         🔍&nbsp; Browse{" "}
         <a
