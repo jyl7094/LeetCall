@@ -6,10 +6,6 @@ export const useScreenState = () => {
 
   useEffect(() => {
     chrome.storage.local.get(["problems"], (result) => {
-      if (chrome.runtime.lastError) {
-        return;
-      }
-
       const problems = result.problems || [];
 
       if (problems.length === 0) {
