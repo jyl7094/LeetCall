@@ -1,3 +1,5 @@
+import type { Problem } from "@/types/problem";
+
 const getCanonicalProblemLink = (row: HTMLElement) => {
   // Try to find closest parent <a> with href
   const parentA = row.closest(
@@ -113,25 +115,20 @@ function insertButtonsIntoProblemSet() {
       let id = "unknown";
       const idMatch = titleElement?.textContent?.match(/^(\d+)\./);
       if (idMatch) id = idMatch[1];
-      // Extract difficulty
-      const difficultyElement = row.querySelector(
-        "p.text-sd-easy, p.text-sd-medium, p.text-sd-hard",
-      );
-      const difficulty = difficultyElement?.textContent?.trim() ?? "";
       // Use helpers for link extraction and normalization
       let link = getCanonicalProblemLink(row);
       link = normalizeLeetCodeProblemUrl(link);
       // Compose Problem object (add difficulty and acceptance as extra fields)
       const now = Date.now();
-      const problem = {
+      const problem: Problem = {
         id,
         title: problemTitle,
         link,
         addedAt: now,
         dueAt: now,
         lastReview: undefined,
-        stability: 0,
-        difficulty,
+        stability: 0.5,
+        difficulty: 5.0,
         confidence: undefined,
       };
       // Save to chrome.storage.local (append, no duplicates by id)
