@@ -1,47 +1,6 @@
 import type { Problem } from "@/types/problem";
 
-const getCanonicalProblemLink = (row: HTMLElement) => {
-  const parentA = row.closest(
-    "a[href^='/problems/']",
-  ) as HTMLAnchorElement | null;
-  if (parentA?.href) return parentA.href;
-  const childA = row.querySelector(
-    "a[href^='/problems/']",
-  ) as HTMLAnchorElement | null;
-  if (childA?.href) return childA.href;
-
-  let el: HTMLElement | null = row;
-  while (el && el !== document.body) {
-    if (
-      el.tagName === "A" &&
-      (el as HTMLAnchorElement).href?.includes("/problems/")
-    ) {
-      return (el as HTMLAnchorElement).href;
-    }
-    el = el.parentElement;
-  }
-  return window.location.href;
-};
-
-const normalizeLeetCodeProblemUrl = (link: string) => {
-  if (link.startsWith("/")) link = window.location.origin + link;
-  try {
-    const urlObj = new URL(link);
-    const match = urlObj.pathname.match(/^\/problems\/[^/]+\/?$/);
-    if (match) return urlObj.origin + match[0];
-    const slugMatch = urlObj.pathname.match(/^\/problems\/[^/]+/);
-    if (slugMatch) return urlObj.origin + slugMatch[0];
-  } catch {
-    return link; // fallback: do nothing
-  }
-  return link;
-};
-
-function injectButtons() {
-  if (!document.getElementById("leetcall-button-styles")) {
-    const style = document.createElement("style");
-    style.id = "leetcall-button-styles";
-    style.textContent = `
+const LEETCALL_BUTTON_STYLES = `
       .leetcall-button {
         padding: 0.25rem 0.5rem;
         font-size: 0.95rem;
@@ -78,16 +37,51 @@ function injectButtons() {
         border-color: #e5e7eb !important;
       }
     `;
-    document.head.appendChild(style);
+
+const getCanonicalProblemLink = (row: HTMLElement): string => {
+  // Use closest to find the nearest ancestor (or the element itself) that is
+  // an <a> tag and has an href starting with '/problems/'.
+  const linkElement = row.closest(
+    "a[href^='/problems/']",
+  ) as HTMLAnchorElement | null;
+
+  if (linkElement?.href) {
+    return linkElement.href;
   }
 
-  if (
-    typeof chrome === "undefined" ||
-    !chrome.storage ||
-    !chrome.storage.local
-  ) {
-    console.warn("[LeetCall] Chrome storage not available");
-    return;
+  // If no direct ancestor/self link, check for a descendant link within the row.
+  // This is less common for "canonical" links but good to have as a fallback.
+  const childLink = row.querySelector(
+    "a[href^='/problems/']",
+  ) as HTMLAnchorElement | null;
+  if (childLink?.href) {
+    return childLink.href;
+  }
+
+  // Fallback if no specific problem link is found
+  return window.location.href;
+};
+
+const normalizeLeetCodeProblemUrl = (link: string) => {
+  if (link.startsWith("/")) link = window.location.origin + link;
+  try {
+    const urlObj = new URL(link);
+    const match = urlObj.pathname.match(/^\/problems\/[^/]+\/?$/);
+    if (match) return urlObj.origin + match[0];
+    const slugMatch = urlObj.pathname.match(/^\/problems\/[^/]+/);
+    if (slugMatch) return urlObj.origin + slugMatch[0];
+  } catch {
+    return link; // fallback: do nothing
+  }
+  return link;
+};
+
+function injectButtons() {
+  if (!document.getElementById("leetcall-button-styles")) {
+    const style = document.createElement("style");
+    style.id = "leetcall-button-styles";
+    style.textContent = LEETCALL_BUTTON_STYLES;
+    document.head.appendChild(style);
   }
 
   chrome.storage.local.get(["problems"], (result) => {
@@ -101,22 +95,23 @@ function injectButtons() {
     );
 
     rows.forEach((row) => {
-      if (!(row instanceof HTMLElement)) return;
-      if (row.querySelector(".leetcall-button")) return;
+      if (
+        !(row instanceof HTMLElement) ||
+        row.querySelector(".leetcall-button")
+      )
+        return;
 
       const titleElement = row.querySelector("div.ellipsis");
-      const idMatch = titleElement?.textContent?.match(/^(\d+)\./);
+      const rawTitle = titleElement?.textContent ?? "";
+      const idMatch = rawTitle.match(/^(\d+)\./);
       const id = idMatch ? idMatch[1] : "unknown";
+      const problemTitle = rawTitle.replace(/^\d+\.\s*/, "").trim();
 
+      const isAdded = problemIdSet.has(id);
       const button = document.createElement("button");
-      button.textContent = "Add";
-      button.className = "leetcall-button";
-
-      if (problemIdSet.has(id)) {
-        button.disabled = true;
-        button.classList.add("leetcall-button-disabled");
-        button.textContent = "Added";
-      }
+      button.disabled = isAdded;
+      button.textContent = isAdded ? "Added" : "Add";
+      button.className = `leetcall-button ${isAdded ? "leetcall-button-disabled" : ""}`;
 
       const acceptanceRate = row.querySelector("div.text-sd-muted-foreground");
       if (acceptanceRate?.parentElement) {
@@ -125,19 +120,10 @@ function injectButtons() {
         row.appendChild(button);
       }
 
-      button.addEventListener("click", (e) => {
+      button.addEventListener("click", async (e) => {
         e.preventDefault();
         e.stopPropagation();
         button.blur();
-
-        const titleElement = row.querySelector("div.ellipsis");
-        const problemTitle =
-          titleElement?.textContent?.replace(/^\d+\.\s*/, "").trim() ??
-          "Unknown Problem";
-
-        let id = "unknown";
-        const idMatch = titleElement?.textContent?.match(/^(\d+)\./);
-        if (idMatch) id = idMatch[1];
 
         let link = getCanonicalProblemLink(row);
         link = normalizeLeetCodeProblemUrl(link);
@@ -155,25 +141,12 @@ function injectButtons() {
           confidence: undefined,
         };
 
-        chrome.storage.local.get(["problems"], (result) => {
-          const problems: Problem[] = Array.isArray(result.problems)
-            ? result.problems
-            : [];
-          if (!problems.some((p) => p.id === problem.id)) {
-            problems.push(problem);
-            chrome.storage.local.set({ problems }, () => {
-              button.disabled = true;
-              button.classList.add("leetcall-button-disabled");
-              button.textContent = "Added";
-              console.log("[LeetCall] Problem saved:", problem);
-            });
-          } else {
-            button.disabled = true;
-            button.classList.add("leetcall-button-disabled");
-            button.textContent = "Added";
-            console.log("[LeetCall] Problem already exists:", problem);
-          }
-        });
+        problems.push(problem);
+        chrome.storage.local.set({ problems });
+        problemIdSet.add(problem.id);
+        button.disabled = true;
+        button.classList.add("leetcall-button-disabled");
+        button.textContent = "Added";
       });
     });
   });
