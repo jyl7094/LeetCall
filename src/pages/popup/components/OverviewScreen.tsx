@@ -58,6 +58,8 @@ const OverviewScreen = () => {
         }
         // Optionally, set progress here if you want
         // setProgress(...)
+        setInDeck(true);
+        setProgress(1);
       });
     }
   }, [url]);

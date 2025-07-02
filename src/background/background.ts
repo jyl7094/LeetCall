@@ -15,6 +15,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     }
   },
   {
-    url: [{ hostContains: "leetcode.com" }],
+    url: [
+      { urlPrefix: "https://leetcode.com/problemset/" },
+      { urlPrefix: "https://leetcode.com/company/" },
+      { urlPrefix: "https://leetcode.com/problem-list/" },
+    ],
   },
 );
