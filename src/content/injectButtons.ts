@@ -118,11 +118,6 @@ function insertButtonsIntoProblemSet() {
         "p.text-sd-easy, p.text-sd-medium, p.text-sd-hard",
       );
       const difficulty = difficultyElement?.textContent?.trim() ?? "";
-      // Extract acceptance rate
-      const acceptanceElement = row.querySelector(
-        "div.text-sd-muted-foreground",
-      );
-      const acceptance = acceptanceElement?.textContent?.trim() ?? "";
       // Use helpers for link extraction and normalization
       let link = getCanonicalProblemLink(row);
       link = normalizeLeetCodeProblemUrl(link);
@@ -134,12 +129,10 @@ function insertButtonsIntoProblemSet() {
         link,
         addedAt: now,
         dueAt: now,
-        interval: 1,
-        easeFactor: 2.5,
-        repetitions: 0,
-        confidence: undefined,
+        lastReview: undefined,
+        stability: 0,
         difficulty,
-        acceptance,
+        confidence: undefined,
       };
       // Save to chrome.storage.local (append, no duplicates by id)
       // if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
