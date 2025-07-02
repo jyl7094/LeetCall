@@ -85,9 +85,7 @@ const injectButtons = () => {
   }
 
   chrome.storage.local.get(["problems"], (result) => {
-    const problems: Problem[] = Array.isArray(result.problems)
-      ? result.problems
-      : [];
+    const problems: Problem[] = result.problems || [];
     const problemIdSet = new Set(problems.map((p) => p.id));
 
     const rows = document.querySelectorAll(
