@@ -43,7 +43,7 @@ const normalizeLeetCodeProblemUrl = (link: string) => {
   return link;
 };
 
-function insertButtonsIntoProblemSet() {
+function injectButtons() {
   // Inject button styles only once
   if (!document.getElementById("leetcall-button-styles")) {
     const style = document.createElement("style");
@@ -77,6 +77,13 @@ function insertButtonsIntoProblemSet() {
         outline: none;
         box-shadow: 0 0 0 2px #ffe5ca;
       }
+      .leetcall-button-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #e5e7eb !important;
+        color: #a1a1aa !important;
+        border-color: #e5e7eb !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -94,8 +101,25 @@ function insertButtonsIntoProblemSet() {
     button.textContent = "Add";
     button.className = "leetcall-button";
 
-    const acceptanceRate = row.querySelector("div.text-sd-muted-foreground");
+    // On load, check if this problem is already in storage and disable button if so (do this before DOM insert for perf)
+    let id = "unknown";
+    const titleElement = row.querySelector("div.ellipsis");
+    const idMatch = titleElement?.textContent?.match(/^(\d+)\./);
+    if (idMatch) id = idMatch[1];
+    let alreadyDisabled = false;
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(["problems"], (result) => {
+        const problems: Problem[] = Array.isArray(result.problems) ? result.problems : [];
+        if (problems.some((p) => p.id === id)) {
+          button.disabled = true;
+          button.classList.add("leetcall-button-disabled");
+          button.textContent = "Added";
+          alreadyDisabled = true;
+        }
+      });
+    }
 
+    const acceptanceRate = row.querySelector("div.text-sd-muted-foreground");
     if (acceptanceRate?.parentElement) {
       acceptanceRate.parentElement.insertBefore(button, acceptanceRate);
     } else {
@@ -131,36 +155,52 @@ function insertButtonsIntoProblemSet() {
         difficulty: 5.0,
         confidence: undefined,
       };
-      // Save to chrome.storage.local (append, no duplicates by id)
-      // if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      //   chrome.storage.local.get(["leetcall_problems"], (result) => {
-      //     const problems = Array.isArray(result.leetcall_problems) ? result.leetcall_problems : [];
-      //     const exists = problems.some((p) => p.id === problem.id);
-      //     if (!exists) {
-      //       problems.push(problem);
-      //       chrome.storage.local.set({ leetcall_problems: problems }, () => {
-      //         console.log("[LeetCall] Problem saved:", problem);
-      //       });
-      //     } else {
-      //       console.log("[LeetCall] Problem already exists:", problem);
-      //     }
-      //   });
-      // } else {
-      console.log("[LeetCall] Problem added:", problem);
-      // }
+      // Store the problem in chrome.storage.local under 'problems', append if not duplicate by id
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(["problems"], (result) => {
+          const problems: Problem[] = Array.isArray(result.problems) ? result.problems : [];
+          const exists = problems.some((p) => p.id === problem.id);
+          if (!exists) {
+            problems.push(problem);
+            chrome.storage.local.set({ problems }, () => {
+              button.disabled = true;
+              button.classList.add("leetcall-button-disabled");
+              button.textContent = "Added";
+              console.log("[LeetCall] Problem saved:", problem);
+            });
+          } else {
+            button.disabled = true;
+            button.classList.add("leetcall-button-disabled");
+            button.textContent = "Added";
+            console.log("[LeetCall] Problem already exists:", problem);
+          }
+        });
+      } else {
+        button.disabled = true;
+        button.classList.add("leetcall-button-disabled");
+        button.textContent = "Added";
+        console.log("[LeetCall] Problem added (not saved):", problem);
+      }
     });
+
+    // Disable button immediately if problem already exists (for perceived performance)
+    if (alreadyDisabled) {
+      button.disabled = true;
+      button.classList.add("leetcall-button-disabled");
+      button.textContent = "Added";
+    }
   });
 }
 
 // Initial injection on page load
 window.addEventListener("load", () => {
-  insertButtonsIntoProblemSet();
-  setTimeout(insertButtonsIntoProblemSet, 1000); // in case of async content
+  injectButtons();
+  setTimeout(injectButtons, 1000); // in case of async content
 });
 
 // Set up MutationObserver to monitor SPA DOM changes
 const observer = new MutationObserver(() => {
-  insertButtonsIntoProblemSet();
+  injectButtons();
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
