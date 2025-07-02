@@ -1,21 +1,66 @@
+import { useUrlChange } from "@/hooks/useUrlChange";
+import type { Problem } from "@/types/problem";
 import { useEffect, useState } from "react";
 
 const OverviewScreen = () => {
   const [progress, setProgress] = useState(0); // 0-100
   const [allDone, setAllDone] = useState(false);
-  const [currentProblem, setCurrentProblem] = useState(null); // object or null
+  const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
   const [inDeck, setInDeck] = useState(false);
-  const [upcoming, setUpcoming] = useState([]);
+  const [upcoming, setUpcoming] = useState<Problem[]>([]);
+  const url = useUrlChange();
 
-  // MOCK useEffect to simulate logic
   useEffect(() => {
-    // Simulate logic to get data and set:
-    // - progress
-    // - allDone
-    // - currentProblem
-    // - inDeck
-    // - upcoming
-  }, []);
+    // Get only due problems from chrome.storage.local
+    console.log("[LeetCall] Loading overview screen...");
+    if (
+      typeof chrome !== "undefined" &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      chrome.storage.local.get(["problems"], (result) => {
+        const problems: Problem[] = Array.isArray(result.problems)
+          ? result.problems
+          : [];
+        const now = Date.now();
+        // Only problems that are due
+        const dueProblems = problems.filter(
+          (p) => typeof p.dueAt === "number" && p.dueAt <= now,
+        );
+        setUpcoming(dueProblems);
+        setAllDone(dueProblems.length === 0);
+        // Default: set first due problem
+        const selectedProblem = dueProblems.length > 0 ? dueProblems[0] : null;
+        // Detect if current tab is a LeetCode problem page and match by link
+        if (url && url.startsWith("https://leetcode.com/problems/")) {
+          // Robust normalization: decode, lowercase, strip query/hash, trailing slash, trim
+          const normalize = (u: string) =>
+            decodeURIComponent(u)
+              .toLowerCase()
+              .replace(/([?#]).*$/, "")
+              .replace(/\/$/, "")
+              .trim();
+          const canonicalUrl = normalize(url);
+          console.log("[LeetCall] current url:", url, "->", canonicalUrl);
+          let found: Problem | null = null;
+          for (const p of dueProblems) {
+            const normLink = normalize(p.link);
+            console.log("[LeetCall] comparing:", normLink, "vs", canonicalUrl);
+            if (normLink === canonicalUrl) {
+              found = p;
+              break;
+            }
+          }
+          console.log("[LeetCall] match:", found);
+          setCurrentProblem(found || selectedProblem);
+        } else {
+          setCurrentProblem(selectedProblem);
+        }
+        // Optionally, set progress here if you want
+        // setProgress(...)
+      });
+    }
+  }, [url]);
 
   return (
     <div className="px-1 py-4 space-y-6">
