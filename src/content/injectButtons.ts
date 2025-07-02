@@ -1,3 +1,46 @@
+const getCanonicalProblemLink = (row: HTMLElement) => {
+  // Try to find closest parent <a> with href
+  const parentA = row.closest(
+    "a[href^='/problems/']",
+  ) as HTMLAnchorElement | null;
+  if (parentA && parentA.href) return parentA.href;
+  // Try to find a child <a> with href
+  const childA = row.querySelector(
+    "a[href^='/problems/']",
+  ) as HTMLAnchorElement | null;
+  if (childA && childA.href) return childA.href;
+  // Try to find a parent <a> (for card layout)
+  let el: HTMLElement | null = row;
+  while (el && el !== document.body) {
+    if (
+      el.tagName === "A" &&
+      (el as HTMLAnchorElement).href &&
+      (el as HTMLAnchorElement).href.includes("/problems/")
+    ) {
+      return (el as HTMLAnchorElement).href;
+    }
+    el = el.parentElement;
+  }
+  // Fallback to current page
+  return window.location.href;
+};
+
+const normalizeLeetCodeProblemUrl = (link: string) => {
+  // Ensure absolute URL
+  if (link.startsWith("/")) link = window.location.origin + link;
+  try {
+    const urlObj = new URL(link);
+    const match = urlObj.pathname.match(/^\/problems\/[^/]+\/?$/);
+    if (match) return urlObj.origin + match[0];
+    // If path is /problems/<slug>/something, keep only /problems/<slug>
+    const slugMatch = urlObj.pathname.match(/^\/problems\/[^/]+/);
+    if (slugMatch) return urlObj.origin + slugMatch[0];
+  } catch {
+    // Intentionally ignore URL parse errors
+  }
+  return link;
+};
+
 function insertButtonsIntoProblemSet() {
   // Inject button styles only once
   if (!document.getElementById("leetcall-button-styles")) {
@@ -6,16 +49,31 @@ function insertButtonsIntoProblemSet() {
     style.textContent = `
       .leetcall-button {
         padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        background-color: rgb(237, 139, 60);
-        color: white;
-        border-radius: 0.375rem;
-        transition: background-color 0.2s ease-in-out;
+        font-size: 0.95rem;
+        font-weight: 500;
+        background: #ed8b3c;
+        color: #fff;
+        border: 1px solid #ed8b3c;
+        border-radius: 9999px;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
         cursor: pointer;
-        user-select: none;
+        min-width: 56px;
+        max-width: 90px;
+        letter-spacing: 0.1px;
       }
       .leetcall-button:hover {
-        background-color: rgb(204, 119, 51);
+        background: #ffb877;
+        color: #fff;
+        border-color: #ed8b3c;
+      }
+      .leetcall-button:active {
+        border-color: #ed8b3c;
+        background: #e07a1a;
+        color: #fff;
+      }
+      .leetcall-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #ffe5ca;
       }
     `;
     document.head.appendChild(style);
@@ -45,10 +103,61 @@ function insertButtonsIntoProblemSet() {
     button.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const titleElement = row.querySelector("div.text-body div.ellipsis");
+      button.blur(); // Remove focus highlight after click
+      // Extract info for Problem type
+      const titleElement = row.querySelector("div.ellipsis");
       const problemTitle =
-        titleElement?.textContent?.trim() ?? "Unknown Problem";
-      console.log(`Button clicked for problem: "${problemTitle}"`);
+        titleElement?.textContent?.replace(/^\d+\.\s*/, "").trim() ??
+        "Unknown Problem";
+      // Try to extract id from the title (e.g., '9. Palindrome Number')
+      let id = "unknown";
+      const idMatch = titleElement?.textContent?.match(/^(\d+)\./);
+      if (idMatch) id = idMatch[1];
+      // Extract difficulty
+      const difficultyElement = row.querySelector(
+        "p.text-sd-easy, p.text-sd-medium, p.text-sd-hard",
+      );
+      const difficulty = difficultyElement?.textContent?.trim() ?? "";
+      // Extract acceptance rate
+      const acceptanceElement = row.querySelector(
+        "div.text-sd-muted-foreground",
+      );
+      const acceptance = acceptanceElement?.textContent?.trim() ?? "";
+      // Use helpers for link extraction and normalization
+      let link = getCanonicalProblemLink(row);
+      link = normalizeLeetCodeProblemUrl(link);
+      // Compose Problem object (add difficulty and acceptance as extra fields)
+      const now = Date.now();
+      const problem = {
+        id,
+        title: problemTitle,
+        link,
+        addedAt: now,
+        dueAt: now,
+        interval: 1,
+        easeFactor: 2.5,
+        repetitions: 0,
+        confidence: undefined,
+        difficulty,
+        acceptance,
+      };
+      // Save to chrome.storage.local (append, no duplicates by id)
+      // if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      //   chrome.storage.local.get(["leetcall_problems"], (result) => {
+      //     const problems = Array.isArray(result.leetcall_problems) ? result.leetcall_problems : [];
+      //     const exists = problems.some((p) => p.id === problem.id);
+      //     if (!exists) {
+      //       problems.push(problem);
+      //       chrome.storage.local.set({ leetcall_problems: problems }, () => {
+      //         console.log("[LeetCall] Problem saved:", problem);
+      //       });
+      //     } else {
+      //       console.log("[LeetCall] Problem already exists:", problem);
+      //     }
+      //   });
+      // } else {
+      console.log("[LeetCall] Problem added:", problem);
+      // }
     });
   });
 }
