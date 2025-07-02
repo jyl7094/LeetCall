@@ -13,7 +13,11 @@
     "default_popup": "src/pages/popup/index.html"
   },
   "permissions": ["storage", "scripting", "webNavigation"],
-  "host_permissions": ["https://leetcode.com/*"],
+  "host_permissions": [
+    "https://leetcode.com/problemset/*",
+    "https://leetcode.com/company/*",
+    "https://leetcode.com/problem-list/*"
+  ],
   "background": {
     "service_worker": "background.js"
   }
