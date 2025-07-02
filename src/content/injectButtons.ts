@@ -76,7 +76,7 @@ const normalizeLeetCodeProblemUrl = (link: string) => {
   return link;
 };
 
-function injectButtons() {
+const injectButtons = () => {
   if (!document.getElementById("leetcall-button-styles")) {
     const style = document.createElement("style");
     style.id = "leetcall-button-styles";
@@ -150,7 +150,7 @@ function injectButtons() {
       });
     });
   });
-}
+};
 
 window.addEventListener("load", () => {
   injectButtons();
