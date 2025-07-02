@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const OverviewScreen = () => {
   const [progress, setProgress] = useState(0); // 0-100
-  const [allDone, setAllDone] = useState(true);
+  const [allDone, setAllDone] = useState(false);
   const [currentProblem, setCurrentProblem] = useState(null); // object or null
   const [inDeck, setInDeck] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
@@ -20,7 +20,7 @@ const OverviewScreen = () => {
   return (
     <div className="px-1 py-4 space-y-6">
       {/* Status */}
-      <div className="flex items-center justify-center relative">
+      <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
         {allDone ? (
           <div className="text-center space-y-2 relative flex flex-col items-center justify-center">
             <div className="text-3xl">🎉</div>
@@ -124,7 +124,7 @@ const OverviewScreen = () => {
           ].map(({ label, color }, idx) => (
             <button
               key={idx}
-              className={`flex-1 min-w-0 px-2 py-1 text-sm font-medium rounded-full border bg-white transition-colors duration-150 ${color} hover:cursor-pointer focus:outline-none focus:ring-0 focus-visible:ring-0`}
+              className={`flex-1 min-w-0 px-2 py-1 text-sm font-medium rounded-md border bg-white transition-colors duration-150 ${color} hover:cursor-pointer focus:outline-none focus:ring-0 focus-visible:ring-0`}
               style={{ letterSpacing: 0.1, maxWidth: 80 }}
             >
               {label}

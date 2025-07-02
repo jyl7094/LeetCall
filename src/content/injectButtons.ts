@@ -49,7 +49,7 @@ function injectButtons() {
         background: #ed8b3c;
         color: #fff;
         border: 1px solid #ed8b3c;
-        border-radius: 9999px;
+        border-radius: 6px;
         transition: background 0.15s, border-color 0.15s, color 0.15s;
         cursor: pointer;
         min-width: 56px;
