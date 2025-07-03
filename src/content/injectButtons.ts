@@ -143,9 +143,9 @@ const injectButtons = () => {
           addedAt: now,
           dueAt: now,
           reviewLog: [],
-          stability: 0,
-          difficulty: 0.3,
-          confidence: undefined,
+          stability: undefined,
+          difficulty: undefined,
+          confidence: undefined
         };
 
         problems.push(problem);

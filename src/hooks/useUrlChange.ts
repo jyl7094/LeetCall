@@ -8,7 +8,6 @@ export const useUrlChange = () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tabUrl = tabs[0].url || "";
         setUrl(tabUrl);
-        console.log("[LeetCall] Active tab URL:", tabUrl);
       });
     };
     updateUrlFromTab();

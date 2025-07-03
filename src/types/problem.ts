@@ -7,8 +7,8 @@ export type Problem = {
   dueAt?: number;
   reviewLog: number[];
 
-  stability: number;
-  difficulty: number;
+  stability?: number;
+  difficulty?: number;
 
   confidence?: number;
 };

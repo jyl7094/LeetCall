@@ -30,10 +30,7 @@ const App = () => {
   return (
     <div className="w-[350px] flex flex-col antialiased py-4 px-5 gap-1 text-gray-900 bg-gray-50">
       <Header />
-      {/* {renderScreen()} */}
-      {/* <InstructionsScreen /> */}
-      {/* <LoadingScreen /> */}
-      <OverviewScreen />
+      {renderScreen()}
       <button
         onClick={handleDashboard}
         className="bg-blue-500 hover:bg-blue-600 text-gray-50 py-2 rounded cursor-pointer transition-colors duration-200 ease-in-out"
