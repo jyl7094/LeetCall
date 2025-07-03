@@ -137,7 +137,7 @@ const injectButtons = () => {
           link,
           addedAt: now,
           dueAt: now,
-          lastReview: undefined,
+          reviewLog: [],
           stability: 0.5,
           difficulty: 5.0,
           confidence: undefined,
