@@ -32,7 +32,7 @@ const App = () => {
       <Header />
       {/* {renderScreen()} */}
       {/* <InstructionsScreen /> */}
-      {/* <LoadingScreen />/ */}
+      {/* <LoadingScreen /> */}
       <OverviewScreen />
       <button
         onClick={handleDashboard}

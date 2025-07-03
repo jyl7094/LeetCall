@@ -4,71 +4,81 @@ import { useEffect, useState } from "react";
 
 const OverviewScreen = () => {
   const [progress, setProgress] = useState(0); // 0-100
-  const [allDone, setAllDone] = useState(false);
   const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
-  const [inDeck, setInDeck] = useState(false);
-  const [upcoming, setUpcoming] = useState<Problem[]>([]);
+  const [problems, setProblems] = useState<Problem[]>([]);
   const url = useUrlChange();
 
+  // 1. Fetch due problems once
   useEffect(() => {
-    // Get only due problems from chrome.storage.local
-    console.log("[LeetCall] Loading overview screen...");
-    if (
-      typeof chrome !== "undefined" &&
-      chrome.storage &&
-      chrome.storage.local
-    ) {
+    function fetchProblems() {
       chrome.storage.local.get(["problems"], (result) => {
-        const problems: Problem[] = Array.isArray(result.problems)
-          ? result.problems
-          : [];
+        const allProblems: Problem[] = result.problems || [];
         const now = Date.now();
-        // Only problems that are due
-        const dueProblems = problems.filter(
-          (p) => typeof p.dueAt === "number" && p.dueAt <= now,
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const startOfTodayMs = startOfToday.getTime();
+
+        // Problems due today or earlier
+        const todaysProblems = allProblems.filter((p) => p.dueAt <= now);
+
+        // Problems reviewed today or after dueAt
+        const solvedToday = todaysProblems.filter(
+          (p) =>
+            p.lastReview && p.lastReview >= Math.max(p.dueAt, startOfTodayMs),
         );
-        setUpcoming(dueProblems);
-        setAllDone(dueProblems.length === 0);
-        // Default: set first due problem
-        const selectedProblem = dueProblems.length > 0 ? dueProblems[0] : null;
-        // Detect if current tab is a LeetCode problem page and match by link
-        if (url && url.startsWith("https://leetcode.com/problems/")) {
-          // Robust normalization: decode, lowercase, strip query/hash, trailing slash, trim
-          const normalize = (u: string) =>
-            decodeURIComponent(u)
-              .toLowerCase()
-              .replace(/([?#]).*$/, "")
-              .replace(/\/$/, "")
-              .trim();
-          const canonicalUrl = normalize(url);
-          console.log("[LeetCall] current url:", url, "->", canonicalUrl);
-          let found: Problem | null = null;
-          for (const p of dueProblems) {
-            const normLink = normalize(p.link);
-            console.log("[LeetCall] comparing:", normLink, "vs", canonicalUrl);
-            if (normLink === canonicalUrl) {
-              found = p;
-              break;
-            }
-          }
-          console.log("[LeetCall] match:", found);
-          setCurrentProblem(found || selectedProblem);
-        } else {
-          setCurrentProblem(selectedProblem);
-        }
-        // Optionally, set progress here if you want
-        // setProgress(...)
-        setInDeck(true);
-        setProgress(0);
+
+        // Progress is how many due problems were reviewed
+        const progress =
+          todaysProblems.length === 0
+            ? 100
+            : Math.round((solvedToday.length / todaysProblems.length) * 100);
+
+        setProblems(todaysProblems.sort((a, b) => a.dueAt - b.dueAt));
+        setProgress(progress);
       });
     }
-  }, [url]);
+
+    fetchProblems();
+
+    function handleStorageChange(
+      changes: Record<string, chrome.storage.StorageChange>,
+      area: string,
+    ) {
+      if (area === "local" && changes.problems) {
+        fetchProblems();
+      }
+    }
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+  }, []);
+
+  useEffect(() => {
+    const idx = problems.findIndex((p) => p.link === url);
+
+    if (idx === -1) {
+      // Viewing unrelated problem
+      setCurrentProblem(null);
+    } else if (idx === 0) {
+      // Correct current problem
+      setCurrentProblem(problems[0]);
+    } else {
+      // User is on a due problem, but not the first
+      const newProblems = [...problems];
+      const viewed = newProblems[idx];
+      newProblems[idx] = newProblems[0];
+      newProblems[0] = viewed;
+
+      setCurrentProblem(viewed);
+      setProblems(newProblems.slice(1)); // exclude current
+    }
+  }, [url, problems]);
 
   return (
     <div className="px-1 py-4 space-y-6">
       {/* Status */}
       <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
-        {allDone ? (
+        {progress === 100 ? (
           <div className="text-center space-y-2 relative flex flex-col items-center justify-center">
             <div className="text-3xl">🎉</div>
             <div className="font-semibold text-sm">
@@ -178,19 +188,19 @@ const OverviewScreen = () => {
             </button>
           ))}
         </div>
-        {!inDeck && currentProblem && (
+        {/* {!inDeck && currentProblem && (
           <div className="text-xs text-gray-500 mt-1">
             Rating will add this problem to your deck.
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Upcoming */}
       <div className="space-y-1">
         <div className="font-medium">Upcoming</div>
-        {upcoming.length > 0 ? (
+        {problems.length > 0 ? (
           <ul className="list-disc list-inside text-gray-700 space-y-1">
-            {upcoming.slice(0, 3).map((problem, idx) => (
+            {problems.slice(0, 1).map((problem, idx) => (
               <li key={idx}>{problem.title}</li>
             ))}
           </ul>
