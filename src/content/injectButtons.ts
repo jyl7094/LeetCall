@@ -38,6 +38,15 @@ const LEETCALL_BUTTON_STYLES = `
       }
     `;
 
+const addButtonStyle = () => {
+  if (!document.getElementById("leetcall-button-styles")) {
+    const style = document.createElement("style");
+    style.id = "leetcall-button-styles";
+    style.textContent = LEETCALL_BUTTON_STYLES;
+    document.head.appendChild(style);
+  }
+};
+
 const getCanonicalProblemLink = (row: HTMLElement): string => {
   // Use closest to find the nearest ancestor (or the element itself) that is
   // an <a> tag and has an href starting with '/problems/'.
@@ -82,12 +91,7 @@ const normalizeLeetCodeProblemUrl = (link: string): string => {
 };
 
 const injectButtons = () => {
-  if (!document.getElementById("leetcall-button-styles")) {
-    const style = document.createElement("style");
-    style.id = "leetcall-button-styles";
-    style.textContent = LEETCALL_BUTTON_STYLES;
-    document.head.appendChild(style);
-  }
+  addButtonStyle();
 
   chrome.storage.local.get(["problems"], (result) => {
     const problems: Problem[] = result.problems || [];
@@ -138,13 +142,20 @@ const injectButtons = () => {
           addedAt: now,
           dueAt: now,
           reviewLog: [],
-          stability: 0.5,
-          difficulty: 5.0,
+          stability: 0,
+          difficulty: 0.3,
           confidence: undefined,
         };
 
         problems.push(problem);
-        chrome.storage.local.set({ problems });
+        chrome.storage.local.set({ problems }, () => {
+          // Now after 'problems' is saved, update dueProblems
+          chrome.storage.local.get(["dueProblems"], (res) => {
+            const dueProblems: Problem[] = res.dueProblems || [];
+            dueProblems.push(problem);
+            chrome.storage.local.set({ dueProblems });
+          });
+        });
         problemIdSet.add(problem.id);
         button.disabled = true;
         button.classList.add("leetcall-button-disabled");

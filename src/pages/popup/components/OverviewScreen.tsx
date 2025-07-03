@@ -18,16 +18,11 @@ const OverviewScreen = () => {
         startOfToday.setHours(0, 0, 0, 0);
         const startOfTodayMs = startOfToday.getTime();
 
-        // Problems due today or earlier
         const todaysProblems = allProblems.filter((p) => p.dueAt <= now);
-
-        // Problems reviewed today or after dueAt
-        const solvedToday = todaysProblems.filter(
-          (p) =>
-            p.lastReview && p.lastReview >= Math.max(p.dueAt, startOfTodayMs),
+        const solvedToday = todaysProblems.filter((p) =>
+          (p.reviewLog ?? []).some((ts) => ts >= startOfTodayMs),
         );
 
-        // Progress is how many due problems were reviewed
         const progress =
           todaysProblems.length === 0
             ? 100
@@ -40,14 +35,14 @@ const OverviewScreen = () => {
 
     fetchProblems();
 
-    function handleStorageChange(
+    const handleStorageChange = (
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
-    ) {
+    ) => {
       if (area === "local" && changes.problems) {
         fetchProblems();
       }
-    }
+    };
 
     chrome.storage.onChanged.addListener(handleStorageChange);
     return () => chrome.storage.onChanged.removeListener(handleStorageChange);
@@ -145,7 +140,7 @@ const OverviewScreen = () => {
           <div>
             <div className="text-blue-700">{currentProblem.title}</div>
             <div className="text-xs text-gray-500">
-              {inDeck ? "In your deck" : "Not in deck"}
+              {/* {inDeck ? "In your deck" : "Not in deck"} */}
             </div>
           </div>
         ) : (
