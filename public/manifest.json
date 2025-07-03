@@ -12,7 +12,7 @@
   "action": {
     "default_popup": "src/pages/popup/index.html"
   },
-  "permissions": ["storage", "scripting", "webNavigation"],
+  "permissions": ["storage", "scripting", "webNavigation", "alarms"],
   "host_permissions": [
     "https://leetcode.com/problemset/*",
     "https://leetcode.com/company/*",

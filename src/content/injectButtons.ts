@@ -95,6 +95,7 @@ const injectButtons = () => {
 
   chrome.storage.local.get(["problems"], (result) => {
     const problems: Problem[] = result.problems || [];
+    const dueProblems: Problem[] = result.dueProblems || [];
     const problemIdSet = new Set(problems.map((p) => p.id));
 
     const rows = document.querySelectorAll(
@@ -148,14 +149,8 @@ const injectButtons = () => {
         };
 
         problems.push(problem);
-        chrome.storage.local.set({ problems }, () => {
-          // Now after 'problems' is saved, update dueProblems
-          chrome.storage.local.get(["dueProblems"], (res) => {
-            const dueProblems: Problem[] = res.dueProblems || [];
-            dueProblems.push(problem);
-            chrome.storage.local.set({ dueProblems });
-          });
-        });
+        dueProblems.push(problem);
+        chrome.storage.local.set({ problems, dueProblems });
         problemIdSet.add(problem.id);
         button.disabled = true;
         button.classList.add("leetcall-button-disabled");
