@@ -5,7 +5,7 @@ export type Problem = {
 
   addedAt: number;
   dueAt: number;
-  lastReview?: number;
+  reviewLog: [];
 
   stability: number;
   difficulty: number;
