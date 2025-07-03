@@ -5,7 +5,7 @@ const updateDueProblems = () => {
   chrome.storage.local.get(["problems"], (res) => {
     const now = Date.now();
     const problems: Problem[] = res.problems || [];
-    const dueProblems = problems.filter((p) => p.dueAt <= now);
+    const dueProblems = problems.filter((p) => p.dueAt! <= now);
 
     chrome.storage.local.set({ dueProblems });
   });
