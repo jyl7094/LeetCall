@@ -3,8 +3,8 @@ export type Problem = {
   title: string;
   link: string;
 
-  addedAt: number;
-  dueAt: number;
+  addedAt?: number;
+  dueAt?: number;
   reviewLog: number[];
 
   stability: number;
