@@ -93,7 +93,7 @@ const normalizeLeetCodeProblemUrl = (link: string): string => {
 const injectButtons = () => {
   addButtonStyle();
 
-  chrome.storage.local.get(["problems"], (result) => {
+  chrome.storage.local.get(["problems", "dueProblems"], (result) => {
     const problems: Problem[] = result.problems || [];
     const dueProblems: Problem[] = result.dueProblems || [];
     const problemIdSet = new Set(problems.map((p) => p.id));
