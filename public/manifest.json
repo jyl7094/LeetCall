@@ -16,7 +16,8 @@
   "host_permissions": [
     "https://leetcode.com/problemset/*",
     "https://leetcode.com/company/*",
-    "https://leetcode.com/problem-list/*"
+    "https://leetcode.com/problem-list/*",
+    "http://leetcode.com/problems/*"
   ],
   "background": {
     "service_worker": "background.js"
