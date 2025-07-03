@@ -62,17 +62,22 @@ const getCanonicalProblemLink = (row: HTMLElement): string => {
   return window.location.href;
 };
 
-const normalizeLeetCodeProblemUrl = (link: string) => {
-  if (link.startsWith("/")) link = window.location.origin + link;
+const normalizeLeetCodeProblemUrl = (link: string): string => {
+  if (link.startsWith("/")) {
+    link = window.location.origin + link;
+  }
+
   try {
     const urlObj = new URL(link);
-    const match = urlObj.pathname.match(/^\/problems\/[^/]+\/?$/);
-    if (match) return urlObj.origin + match[0];
-    const slugMatch = urlObj.pathname.match(/^\/problems\/[^/]+/);
-    if (slugMatch) return urlObj.origin + slugMatch[0];
-  } catch {
-    return link; // fallback: do nothing
+    const match = urlObj.pathname.match(/^\/problems\/[^/]+/);
+    if (match) {
+      return urlObj.origin + match[0]; // match[0] contains the full matched string, e.g., "/problems/two-sum"
+    }
+  } catch (e) {
+    console.warn("[LeetCall] Error normalizing URL:", link, e);
+    return link;
   }
+
   return link;
 };
 
@@ -123,8 +128,7 @@ const injectButtons = () => {
         e.stopPropagation();
         button.blur();
 
-        let link = getCanonicalProblemLink(row);
-        link = normalizeLeetCodeProblemUrl(link);
+        const link = normalizeLeetCodeProblemUrl(getCanonicalProblemLink(row));
 
         const now = Date.now();
         const problem: Problem = {
