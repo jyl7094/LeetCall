@@ -250,7 +250,18 @@ const OverviewScreen = () => {
 
       {/* Rating Buttons */}
       <div className="space-y-2">
-        <div className="font-medium">Rate Your Confidence</div>
+        <div className="flex items-center gap-1">
+          <span className="font-medium">Rate Your Confidence</span>
+          <div className="relative">
+            <span className="group cursor-pointer text-gray-400 hover:text-gray-600">
+              &#9432;
+              <div className="absolute left-1/2 top-full mt-1 w-64 -translate-x-1/2 rounded-md bg-gray-50 text-xs p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 shadow-sm border border-gray-200 pointer-events-none">
+                Rating marks the problem complete. If new, it’ll be added to
+                your deck.
+              </div>
+            </span>
+          </div>
+        </div>
         <div className="flex justify-between gap-2">
           {[
             {
@@ -295,8 +306,6 @@ const OverviewScreen = () => {
       {/* Upcoming */}
       <div className="space-y-2">
         <div className="font-medium">Upcoming</div>
-        {/* REVIEW: Only the first upcoming problem is shown, even though up to 3 are computed.
-            SUGGESTION: Render all of them, or slice earlier. */}
         {upcoming.length > 0 ? (
           <>
             {upcoming.slice(0, 3).map((problem) => (
@@ -316,3 +325,11 @@ const OverviewScreen = () => {
 };
 
 export default OverviewScreen;
+
+/* chrome.storage.local.get(["problems", "dueProblems"], (result) => {
+  console.log("Stored data:", result);
+
+  // If you want to log each individually:
+  console.log("problems:", result.problems);
+  console.log("dueProblems:", result.dueProblems);
+}); */
