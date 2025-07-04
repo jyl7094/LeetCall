@@ -8,9 +8,22 @@ const updateDueProblems = () => {
     const dueProblems = problems.filter((p) => p.dueAt! <= now);
 
     chrome.storage.local.set({ dueProblems });
+    const count = dueProblems.length;
+    if (count > 0) {
+      const plural = count === 1 ? "problem" : "problems";
+      chrome.runtime.onInstalled.addListener(() => {
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: "icon128.png",
+          title: "LeetCall",
+          message: `You have ${count} ${plural} due for review today.`,
+        });
+      });
+    }
   });
 };
 
+updateDueProblems();
 // Helper: Calculate next midnight timestamp in ms
 const getNextMidnightTime = () => {
   const now = new Date();
