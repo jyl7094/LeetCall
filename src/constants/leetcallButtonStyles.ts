@@ -1,4 +1,4 @@
-export const LEETCALL_BUTTON_STYLES = `
+const LEETCALL_BUTTON_STYLES = `
       .leetcall-button {
         padding: 0.25rem 0.5rem;
         font-size: 0.95rem;
@@ -35,3 +35,5 @@ export const LEETCALL_BUTTON_STYLES = `
         border-color: #e5e7eb !important;
       }
     `;
+
+export default LEETCALL_BUTTON_STYLES;
