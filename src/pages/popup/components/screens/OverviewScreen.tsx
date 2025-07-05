@@ -1,8 +1,49 @@
 import { useUrlChange } from "@/hooks/useUrlChange";
 import ProblemButton from "@/pages/popup/components/overview/ProblemButton";
+import RatingButton from "@/pages/popup/components/overview/RatingButton";
 import type { Problem } from "@/types/problem";
 import { useCallback, useEffect, useState } from "react";
 import CurrentProblemViewer from "../overview/CurrentProblemViewer";
+import Status from "../overview/Status";
+
+const ratingButtons = [
+  {
+    label: "Again",
+    value: 1,
+    color: {
+      text: "text-gray-500",
+      border: "border-gray-200",
+      hover: "hover:bg-gray-200 active:border-gray-500",
+    },
+  },
+  {
+    label: "Hard",
+    value: 2,
+    color: {
+      text: "text-red-500",
+      border: "border-gray-200",
+      hover: "hover:bg-red-100 active:border-red-500",
+    },
+  },
+  {
+    label: "Good",
+    value: 3,
+    color: {
+      text: "text-yellow-600",
+      border: "border-gray-200",
+      hover: "hover:bg-yellow-100 active:border-yellow-500",
+    },
+  },
+  {
+    label: "Easy",
+    value: 4,
+    color: {
+      text: "text-green-600",
+      border: "border-gray-200",
+      hover: "hover:bg-green-100 active:border-green-500",
+    },
+  },
+];
 
 const OverviewScreen = () => {
   const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
@@ -12,6 +53,11 @@ const OverviewScreen = () => {
     new Map(),
   );
   const url = useUrlChange();
+  const disabled = !currentProblem || solvedProblems.has(currentProblem.id); // gotta refactor this later
+  const currentId = currentProblem?.id;
+  const upcoming = problemsList
+    .filter((p) => !solvedProblems.has(p.id) && p.id !== currentId)
+    .slice(0, 3); // refactor up to this part
 
   const fetchDueProblems = useCallback(() => {
     chrome.storage.local.get(["dueProblems"], (result) => {
@@ -267,85 +313,15 @@ const OverviewScreen = () => {
     });
   };
 
-  const renderStatus = () => {
-    const dueProblems = problemsList;
-    const solved = solvedProblems;
-    const progress =
-      dueProblems.length === 0
-        ? 100
-        : Math.round((solved.size / dueProblems.length) * 100);
-    const circumference = 2 * Math.PI * 35;
-    const percent =
-      dueProblems.length === 0 ? 1 : solved.size / dueProblems.length;
-    const dash = Math.round(percent * circumference);
-
-    if (dueProblems.length === 0 || solved.size === dueProblems.length) {
-      return (
-        <div className="text-center space-y-2 relative flex flex-col items-center justify-center">
-          <div className="text-3xl">🎉</div>
-          <div className="font-semibold text-sm">
-            You're all done for today!
-          </div>
-          <div className="text-left px-2 leading-relaxed text-gray-700 space-y-1 mt-2">
-            <p>
-              🔍 Browse{" "}
-              <a
-                href="https://leetcode.com/problemset/all/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                LeetCode
-              </a>{" "}
-              and click <strong>Add</strong> to grow your deck.
-            </p>
-            <p>
-              ⭐ Use the <strong>LeetCall extension</strong> on any problem
-              page.
-            </p>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <svg width="80" height="80" className="block">
-        <g transform="rotate(-90 40 40)">
-          <circle
-            cx="40"
-            cy="40"
-            r="35"
-            stroke="#e5e7eb"
-            strokeWidth="8"
-            fill="none"
-          />
-          <circle
-            cx="40"
-            cy="40"
-            r="35"
-            stroke="#2563eb"
-            strokeWidth="8"
-            strokeDasharray={`${dash} ${circumference}`}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </g>
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          className="fill-gray-800 font-semibold text-base"
-        >
-          {progress}%
-        </text>
-      </svg>
-    );
-  };
-
-  const renderRatingButtons = () => {
-    const disabled = !currentProblem || solvedProblems.has(currentProblem.id);
-    return (
+  return (
+    <div className="px-1 pt-4 pb-2 space-y-4">
+      <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
+        <Status problemsList={problemsList} solvedProblems={solvedProblems} />
+      </div>
+      <CurrentProblemViewer
+        currentProblem={currentProblem}
+        solvedProblems={solvedProblems}
+      />
       <div className="space-y-2">
         <div className="flex items-center gap-1">
           <span className="font-medium">Rate Your Confidence</span>
@@ -360,71 +336,18 @@ const OverviewScreen = () => {
           </div>
         </div>
         <div className="flex justify-between gap-2">
-          {[
-            {
-              label: "Again",
-              value: 1,
-              color: {
-                text: "text-gray-500",
-                border: "border-gray-200",
-                hover: "hover:bg-gray-200 active:border-gray-500",
-              },
-            },
-            {
-              label: "Hard",
-              value: 2,
-              color: {
-                text: "text-red-500",
-                border: "border-gray-200",
-                hover: "hover:bg-red-100 active:border-red-500",
-              },
-            },
-            {
-              label: "Good",
-              value: 3,
-              color: {
-                text: "text-yellow-600",
-                border: "border-gray-200",
-                hover: "hover:bg-yellow-100 active:border-yellow-500",
-              },
-            },
-            {
-              label: "Easy",
-              value: 4,
-              color: {
-                text: "text-green-600",
-                border: "border-gray-200",
-                hover: "hover:bg-green-100 active:border-green-500",
-              },
-            },
-          ].map(({ label, value, color }, idx) => (
-            <button
+          {ratingButtons.map(({ label, value, color }, idx) => (
+            <RatingButton
               key={idx}
-              onClick={() => handleRate(value)}
+              label={label}
+              value={value}
+              color={color}
               disabled={disabled}
-              className={`
-      flex-1 min-w-0 px-2 py-1 text-sm font-medium rounded-md border
-      transition-colors duration-150
-      ${color.text} ${color.border}
-      ${disabled ? "opacity-40" : `${color.hover} hover:cursor-pointer`}
-      max-w-[80px] tracking-normal focus:outline-none focus:ring-0 focus-visible:ring-0
-    `}
-            >
-              {label}
-            </button>
+              handleRate={handleRate}
+            />
           ))}
         </div>
       </div>
-    );
-  };
-
-  const renderUpcoming = () => {
-    const currentId = currentProblem?.id;
-    const upcoming = problemsList
-      .filter((p) => !solvedProblems.has(p.id) && p.id !== currentId)
-      .slice(0, 3);
-
-    return (
       <div className="space-y-2">
         <div className="font-medium">Upcoming</div>
         {upcoming.length > 0 ? (
@@ -439,20 +362,6 @@ const OverviewScreen = () => {
           <div className="text-gray-500">No upcoming problems</div>
         )}
       </div>
-    );
-  };
-
-  return (
-    <div className="px-1 pt-4 pb-2 space-y-4">
-      <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
-        {renderStatus()}
-      </div>
-      <CurrentProblemViewer
-        currentProblem={currentProblem}
-        solvedProblems={solvedProblems}
-      />
-      {renderRatingButtons()}
-      {renderUpcoming()}
     </div>
   );
 };
