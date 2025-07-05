@@ -1,5 +1,5 @@
 import { useUrlChange } from "@/hooks/useUrlChange";
-import ProblemButton from "@/pages/popup/components/ProblemButton";
+import ProblemButton from "@/pages/popup/components/overview/ProblemButton";
 import type { Problem } from "@/types/problem";
 import { useCallback, useEffect, useState } from "react";
 

@@ -1,9 +1,9 @@
 import { ScreenState } from "@/constants/screenState";
 import { useScreenState } from "@/hooks/useScreenState";
-import Header from "@/pages/popup/components/Header";
-import InstructionsScreen from "@/pages/popup/components/InstructionsScreen";
-import LoadingScreen from "@/pages/popup/components/LoadingScreen";
-import OverviewScreen from "@/pages/popup/components/OverviewScreen";
+import Header from "@/pages/popup/components/common/Header";
+import InstructionsScreen from "@/pages/popup/components/screens/InstructionsScreen";
+import LoadingScreen from "@/pages/popup/components/screens/LoadingScreen";
+import OverviewScreen from "@/pages/popup/components/screens/OverviewScreen";
 
 const App = () => {
   const [screen] = useScreenState();
