@@ -5,13 +5,12 @@ import {
   calculateStrokeDasharray,
 } from "@/utils/statusUtils";
 
-const Status = ({
-  problemsList,
-  solvedProblems,
-}: {
+interface StatusProps {
   problemsList: Problem[];
   solvedProblems: Set<string>;
-}) => {
+}
+
+const Status = ({ problemsList, solvedProblems }: StatusProps) => {
   const totalDueProblems = problemsList.length;
   const numSolvedProblems = solvedProblems.size;
   const progress = calculateProgressPercentage(
