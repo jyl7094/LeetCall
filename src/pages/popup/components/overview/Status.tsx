@@ -1,4 +1,9 @@
 import type { Problem } from "@/types/problem";
+import {
+  calculateCircumference,
+  calculateProgressPercentage,
+  calculateStrokeDasharray,
+} from "@/utils/statusUtils";
 
 const Status = ({
   problemsList,
@@ -7,18 +12,21 @@ const Status = ({
   problemsList: Problem[];
   solvedProblems: Set<string>;
 }) => {
-  const dueProblems = problemsList;
-  const solved = solvedProblems;
-  const progress =
-    dueProblems.length === 0
-      ? 100
-      : Math.round((solved.size / dueProblems.length) * 100);
-  const circumference = 2 * Math.PI * 35;
-  const percent =
-    dueProblems.length === 0 ? 1 : solved.size / dueProblems.length;
-  const dash = Math.round(percent * circumference);
+  const totalDueProblems = problemsList.length;
+  const numSolvedProblems = solvedProblems.size;
+  const progress = calculateProgressPercentage(
+    numSolvedProblems,
+    totalDueProblems,
+  );
+  const radius = 35;
+  const circumfercence = calculateCircumference(radius);
+  const [dash, circumference] = calculateStrokeDasharray(
+    numSolvedProblems,
+    totalDueProblems,
+    circumfercence,
+  );
 
-  if (dueProblems.length === 0 || solved.size === dueProblems.length) {
+  if (totalDueProblems === 0 || numSolvedProblems === totalDueProblems) {
     return (
       <div className="text-center space-y-2 relative flex flex-col items-center justify-center">
         <div className="text-3xl">🎉</div>

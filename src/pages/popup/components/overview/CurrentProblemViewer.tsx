@@ -1,12 +1,14 @@
 import type { Problem } from "@/types/problem";
 
+interface CurrentProblemViewerProps {
+  currentProblem: Problem | null;
+  solvedProblems: Set<string>;
+}
+
 const CurrentProblemViewer = ({
   currentProblem,
   solvedProblems,
-}: {
-  currentProblem: Problem | null;
-  solvedProblems: Set<string>;
-}) => (
+}: CurrentProblemViewerProps) => (
   <div className="space-y-2">
     <div className="font-medium">Current Problem</div>
     {currentProblem ? (
