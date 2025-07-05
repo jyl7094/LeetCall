@@ -11,7 +11,8 @@ export type Problem = {
   difficulty?: number;
 };
 
-type ReviewLogEntry = {
+export type ReviewLogEntry = {
   reviewedAt: number;
   confidence: number;
 };
+
