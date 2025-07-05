@@ -145,7 +145,6 @@ const injectButtons = () => {
           reviewLog: [],
           stability: undefined,
           difficulty: undefined,
-          confidence: undefined
         };
 
         problems.push(problem);

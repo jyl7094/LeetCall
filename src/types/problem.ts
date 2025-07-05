@@ -5,10 +5,13 @@ export type Problem = {
 
   addedAt?: number;
   dueAt?: number;
-  reviewLog: number[];
+  reviewLog: ReviewLogEntry[];
 
   stability?: number;
   difficulty?: number;
+};
 
-  confidence?: number;
+type ReviewLogEntry = {
+  reviewedAt: number;
+  confidence: number;
 };
