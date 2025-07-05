@@ -14,7 +14,7 @@ export const useUrlChange = () => {
 
     // 2. Set up listener for tab updates
     const listener = (
-      tabId: number,
+      _tabId: number,
       changeInfo: chrome.tabs.TabChangeInfo,
       tab: chrome.tabs.Tab,
     ) => {
