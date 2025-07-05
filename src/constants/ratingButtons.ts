@@ -1,4 +1,4 @@
-export const ratingButtons = [
+const ratingButtons = [
   {
     label: "Again",
     value: 1,
@@ -36,3 +36,5 @@ export const ratingButtons = [
     },
   },
 ];
+
+export default ratingButtons;

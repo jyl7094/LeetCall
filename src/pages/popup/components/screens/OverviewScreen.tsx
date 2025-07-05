@@ -1,4 +1,4 @@
-import { ratingButtons } from "@/constants/ratingButtons";
+import ratingButtons from "@/constants/ratingButtons";
 import { useUrlChange } from "@/hooks/useUrlChange";
 import ProblemButton from "@/pages/popup/components/overview/ProblemButton";
 import RatingButton from "@/pages/popup/components/overview/RatingButton";
