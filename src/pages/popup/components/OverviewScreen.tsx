@@ -379,37 +379,51 @@ const OverviewScreen = () => {
             {
               label: "Again",
               value: 1,
-              color:
-                "text-gray-500 border-gray-200 hover:bg-gray-200 active:border-gray-500",
+              color: {
+                text: "text-gray-500",
+                border: "border-gray-200",
+                hover: "hover:bg-gray-200 active:border-gray-500",
+              },
             },
             {
               label: "Hard",
               value: 2,
-              color:
-                "text-red-500 border-gray-200 hover:bg-red-100 active:border-red-500",
+              color: {
+                text: "text-red-500",
+                border: "border-gray-200",
+                hover: "hover:bg-red-100 active:border-red-500",
+              },
             },
             {
               label: "Good",
               value: 3,
-              color:
-                "text-yellow-600 border-gray-200 hover:bg-yellow-100 active:border-yellow-500",
+              color: {
+                text: "text-yellow-600",
+                border: "border-gray-200",
+                hover: "hover:bg-yellow-100 active:border-yellow-500",
+              },
             },
             {
               label: "Easy",
               value: 4,
-              color:
-                "text-green-600 border-gray-200 hover:bg-green-100 active:border-green-500",
+              color: {
+                text: "text-green-600",
+                border: "border-gray-200",
+                hover: "hover:bg-green-100 active:border-green-500",
+              },
             },
           ].map(({ label, value, color }, idx) => (
             <button
               key={idx}
               onClick={() => handleRate(value)}
               disabled={disabled}
-              className={`flex-1 min-w-0 px-2 py-1 text-sm font-medium rounded-md border transition-colors duration-150 ${color} ${
-                disabled
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:cursor-pointer"
-              } max-w-[80px] tracking-normal focus:outline-none focus:ring-0 focus-visible:ring-0`}
+              className={`
+      flex-1 min-w-0 px-2 py-1 text-sm font-medium rounded-md border
+      transition-colors duration-150
+      ${color.text} ${color.border}
+      ${disabled ? "opacity-40" : `${color.hover} hover:cursor-pointer`}
+      max-w-[80px] tracking-normal focus:outline-none focus:ring-0 focus-visible:ring-0
+    `}
             >
               {label}
             </button>
