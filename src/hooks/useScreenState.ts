@@ -9,11 +9,11 @@ export const useScreenState = () => {
       try {
         const result = await chrome.storage.local.get(["problems"]);
         const problems = result.problems || [];
-        if (problems.length === 0) {
-          setScreen(ScreenState.Instructions);
-        } else {
-          setScreen(ScreenState.Overview);
-        }
+        setScreen(
+          problems.length === 0
+            ? ScreenState.Instructions
+            : ScreenState.Overview,
+        );
       } catch {
         setScreen(ScreenState.Instructions);
       }

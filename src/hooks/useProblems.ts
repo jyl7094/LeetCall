@@ -1,156 +1,74 @@
 import type { Problem } from "@/types/problem";
 import { useCallback, useEffect, useState } from "react";
 
-interface ProblemsData {
-  problemsList: Problem[];
-  solvedProblems: Set<string>;
-  problemsMap: Map<string, Problem>;
-  loading: boolean;
-  addOrUpdateProblem: (problem: Problem) => Promise<void>;
-  refreshProblems: () => void;
-}
+export const useProblems = () => {
+  // 1. Master list of ALL problems, stored as a Map for O(1) lookup by ID.
+  const [problemMap, setProblemMap] = useState<Map<string, Problem>>(new Map());
 
-export const useProblems = (): ProblemsData => {
-  const [problemsList, setProblemsList] = useState<Problem[]>([]);
-  const [solvedProblems, setSolvedProblems] = useState<Set<string>>(new Set());
-  const [problemsMap, setProblemsMap] = useState<Map<string, Problem>>(
-    new Map(),
-  );
-  const [loading, setLoading] = useState(true);
+  // 2. IDs of problems that the background script has marked as "due" for TODAY.
+  //    These come from the 'dueProblems' chrome.storage key.
+  const [dueIds, setDueIds] = useState<Set<string>>(new Set());
 
-  // Helper function to wrap chrome.storage.local.get in a Promise
-  const getChromeStorageLocal = useCallback(
-    (
-      keys: string | string[] | Record<string, unknown> | null,
-    ): Promise<Record<string, unknown>> => {
-      return new Promise((resolve, reject) => {
-        chrome.storage.local.get(keys, (result) => {
-          if (chrome.runtime.lastError) {
-            console.error(
-              "chrome.storage.local.get error:",
-              chrome.runtime.lastError,
-            );
-            return reject(chrome.runtime.lastError);
-          }
-          resolve(result);
-        });
-      });
-    },
-    [],
-  );
+  // 3. IDs of problems that have been marked as "solved" by the user TODAY.
+  //    These come from the 'solvedProblems' chrome.storage key (which is cleared daily).
+  const [solvedIds, setSolvedIds] = useState<Set<string>>(new Set());
 
-  // Helper function to wrap chrome.storage.local.set in a Promise
-  const setChromeStorageLocal = useCallback(
-    (items: Record<string, unknown>): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        chrome.storage.local.set(items, () => {
-          if (chrome.runtime.lastError) {
-            console.error(
-              "chrome.storage.local.set error:",
-              chrome.runtime.lastError,
-            );
-            return reject(chrome.runtime.lastError);
-          }
-          resolve();
-        });
-      });
-    },
-    [],
-  );
+  // 4. Loading state to inform UI that data is being fetched.
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProblemsFromStorage = useCallback(async () => {
-    setLoading(true);
-    try {
-      const result = await getChromeStorageLocal(["problems"]);
-      // Type assertion: Assuming 'problems' key will store an array of Problem objects
-      const allProblems: Problem[] =
-        (result.problems as Problem[] | undefined) || [];
+  // ... (rest of the hook logic will go here)
+  const fetchAllRelevantStorageData = useCallback(() => {
+    setIsLoading(true); // Start loading
 
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      const startOfTodayMs = startOfToday.getTime();
+    // Fetch all three keys simultaneously
+    chrome.storage.local.get(
+      ["problems", "dueProblems", "solvedProblems"],
+      (result) => {
+        // Process the 'problems' (master list) into a Map
+        const problemsArray: Problem[] = result.problems || [];
+        const newAllProblemsMap = new Map<string, Problem>();
+        problemsArray.forEach((p) => newAllProblemsMap.set(p.id, p));
+        setProblemMap(newAllProblemsMap);
 
-      const currentDueProblems: Problem[] = [];
-      const solvedToday = new Set<string>();
-      const allProblemsMap = new Map<string, Problem>();
-
-      for (const p of allProblems) {
-        allProblemsMap.set(p.link, p);
-
-        if (p.dueAt && p.dueAt <= startOfTodayMs) {
-          currentDueProblems.push(p);
-        }
-
-        if (p.reviewLog.some((entry) => entry.reviewedAt >= startOfTodayMs)) {
-          solvedToday.add(p.id);
-        }
-      }
-
-      const sortedDueProblems = [...currentDueProblems].sort(
-        (a, b) => (a.dueAt || 0) - (b.dueAt || 0),
-      );
-
-      setProblemsList(sortedDueProblems);
-      setProblemsMap(allProblemsMap);
-      setSolvedProblems(solvedToday);
-    } catch (error) {
-      console.error("Error fetching problems from storage:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [getChromeStorageLocal]);
-
-  const addOrUpdateProblem = useCallback(
-    async (newProblem: Problem) => {
-      try {
-        const { problems } = await getChromeStorageLocal(["problems"]);
-        const updatedProblems: Problem[] =
-          (problems as Problem[] | undefined) || []; // Type assertion here too
-
-        const existingProblemIndex = updatedProblems.findIndex(
-          (p) => p.id === newProblem.id,
+        // Process 'dueProblems' into a Set of IDs
+        const dueProblemsArray: Problem[] = result.dueProblems || [];
+        const newCurrentDayDueProblemIds = new Set<string>(
+          dueProblemsArray.map((p) => p.id),
         );
+        setDueIds(newCurrentDayDueProblemIds);
 
-        if (existingProblemIndex !== -1) {
-          updatedProblems[existingProblemIndex] = newProblem;
-        } else {
-          updatedProblems.push(newProblem);
+        // Process 'solvedProblems' into a Set of IDs
+        // ASSUMPTION: 'solvedProblems' storage key contains an array of Problem objects,
+        // and we just need their IDs for the Set. Adjust if it's already an array of string IDs.
+        const solvedProblemsArray: Problem[] = result.solvedProblems || [];
+        const newCurrentDaySolvedProblemIds = new Set<string>(
+          solvedProblemsArray.map((p) => p.id),
+        );
+        setSolvedIds(newCurrentDaySolvedProblemIds);
+
+        setIsLoading(false); // End loading
+      },
+    );
+  }, []);
+
+  const handleStorageChange = useCallback(
+    (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
+      if (area === "local") {
+        // If any of the relevant storage keys change, re-fetch all data
+        if (changes.problems || changes.dueProblems || changes.solvedProblems) {
+          fetchAllRelevantStorageData();
         }
-
-        await setChromeStorageLocal({ problems: updatedProblems });
-      } catch (error) {
-        console.error("Error adding/updating problem:", error);
-        throw error;
       }
     },
-    [getChromeStorageLocal, setChromeStorageLocal],
+    [fetchAllRelevantStorageData], // Dependency: ensures the callback is stable
   );
 
+  // Effect to perform initial data fetch and set up the listener
   useEffect(() => {
-    fetchProblemsFromStorage();
-
-    const handleStorageChange = (
-      changes: Record<string, chrome.storage.StorageChange>,
-      area: string,
-    ) => {
-      if (area === "local" && changes.problems) {
-        fetchProblemsFromStorage();
-      }
-    };
-
+    fetchAllRelevantStorageData(); // Initial data load when hook mounts
     chrome.storage.onChanged.addListener(handleStorageChange);
 
-    return () => {
-      chrome.storage.onChanged.removeListener(handleStorageChange);
-    };
-  }, [fetchProblemsFromStorage]);
-
-  return {
-    problemsList,
-    solvedProblems,
-    problemsMap,
-    loading,
-    addOrUpdateProblem,
-    refreshProblems: fetchProblemsFromStorage,
-  };
+    // Cleanup: remove the listener when the component (or hook) unmounts
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+  }, [fetchAllRelevantStorageData, handleStorageChange]);
 };
