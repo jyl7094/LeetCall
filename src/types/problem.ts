@@ -15,4 +15,3 @@ export type ReviewLogEntry = {
   reviewedAt: number;
   confidence: number;
 };
-

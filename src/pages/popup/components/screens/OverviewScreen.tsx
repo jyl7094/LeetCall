@@ -1,218 +1,89 @@
-import ratingButtons from "@/constants/ratingButtons";
+import { ratingButtons } from "@/constants/ratingButtons";
+import { useProblems } from "@/hooks/useProblems";
 import { useUrlChange } from "@/hooks/useUrlChange";
 import CurrentProblemViewer from "@/pages/popup/components/overview/CurrentProblemViewer";
 import ProblemButton from "@/pages/popup/components/overview/ProblemButton";
 import RatingButton from "@/pages/popup/components/overview/RatingButton";
 import Status from "@/pages/popup/components/overview/Status";
 import type { Problem } from "@/types/problem";
-import parseLeetCodeProblem from "@/utils/parseLeetCodeProblem";
-import { useCallback, useEffect, useState } from "react";
+import { calculateFsrsParams } from "@/utils/fsrs";
+import { parseLeetCodeProblem } from "@/utils/parseLeetCodeProblem";
+import { useEffect, useState } from "react";
 
 const OverviewScreen = () => {
+  const {
+    problemsList,
+    solvedProblems,
+    problemsMap,
+    loading,
+    addOrUpdateProblem,
+  } = useProblems();
   const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
-  const [solvedProblems, setSolvedProblems] = useState<Set<string>>(new Set());
-  const [problemsList, setProblemsList] = useState<Problem[]>([]);
-  const [problemsMap, setProblemsMap] = useState<Map<string, Problem>>(
-    new Map(),
-  );
+
   const url = useUrlChange();
-  const disabled = !currentProblem || solvedProblems.has(currentProblem.id); // gotta refactor this later
-  const currentId = currentProblem?.id;
+
+  // Derived states:
+  const isCurrentProblemSolved = currentProblem
+    ? solvedProblems.has(currentProblem.id)
+    : false;
+  const disabledRating = !currentProblem || isCurrentProblemSolved;
+
   const upcoming = problemsList
-    .filter((p) => !solvedProblems.has(p.id) && p.id !== currentId)
-    .slice(0, 3); // refactor up to this part
-
-  const fetchDueProblems = useCallback(() => {
-    chrome.storage.local.get(["dueProblems"], (result) => {
-      const dueProblems: Problem[] = result.dueProblems || [];
-
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      const startOfTodayMs = startOfToday.getTime();
-
-      const solved = new Set<string>();
-      const map = new Map<string, Problem>();
-
-      for (const p of dueProblems) {
-        if (p.reviewLog.some((ts) => ts >= startOfTodayMs)) {
-          solved.add(p.id);
-        }
-        map.set(p.link, p);
-      }
-
-      const sorted = [...dueProblems].sort((a, b) => a.dueAt! - b.dueAt!);
-      setProblemsList(sorted);
-      setProblemsMap(map);
-      setSolvedProblems(solved);
-    });
-  }, []);
-
-  const handleStorageChange = useCallback(
-    (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
-      if (area === "local" && changes.dueProblems) {
-        fetchDueProblems();
-      }
-    },
-    [fetchDueProblems],
-  );
+    .filter((p) => !solvedProblems.has(p.id) && p.id !== currentProblem?.id)
+    .slice(0, 3);
 
   useEffect(() => {
-    fetchDueProblems();
-    chrome.storage.onChanged.addListener(handleStorageChange);
-    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
-  }, [fetchDueProblems, handleStorageChange]);
+    if (loading) return; // Wait for problems data to load
 
-  useEffect(() => {
     if (problemsList.length === 0) {
       setCurrentProblem(null);
       return;
     }
 
-    const problemFromMap = problemsMap.get(url);
-    if (problemFromMap) {
-      setCurrentProblem(problemFromMap);
-    } else {
-      parseLeetCodeProblem((result) => setCurrentProblem(result));
-    }
-  }, [url, problemsList, problemsMap]);
+    const problemInMap = problemsMap.get(url);
 
-  const handleRate = (confidence: number) => {
-    if (!currentProblem) return;
+    if (problemInMap) {
+      // If found in our stored problems, set it as the current problem
+      setCurrentProblem(problemInMap);
+    } else {
+      // If the problem is not in our known list (e.g., first time visiting this URL),
+      // try to extract its details from the current tab using `parseLeetCodeProblem`.
+      // The `parseLeetCodeProblem` function no longer takes `url` as an argument;
+      // it gets the URL from the active tab itself.
+      parseLeetCodeProblem()
+        .then((parsedProblem) => {
+          // IMPORTANT VALIDATION:
+          // After an async operation, it's crucial to check if the context (e.g., `url`)
+          // is still the same as when the operation was initiated. This prevents
+          // setting problem data for a URL the user has already navigated away from.
+          if (parsedProblem && parsedProblem.link === url) {
+            setCurrentProblem(parsedProblem);
+          } else {
+            // If no problem was parsed, or the parsed problem's link doesn't match
+            // the current `url` state, then there's no relevant problem for this URL.
+            setCurrentProblem(null);
+          }
+        })
+        .catch((error) => {
+          // Log any errors during parsing
+          console.error("Error parsing LeetCode problem from tab:", error);
+          setCurrentProblem(null); // Clear the current problem on error
+        });
+    }
+  }, [url, problemsList, problemsMap, loading]);
+
+  const handleRate = async (confidence: number) => {
+    if (!currentProblem || disabledRating) return;
 
     const now = Date.now();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayMs = today.getTime();
-    const Rd = 0.9;
+    // Use the extracted SM-2 algorithm to get the updated problem
+    const updatedProblem = calculateFsrsParams(currentProblem, confidence, now);
 
-    const W = [
-      0.212, 1.2931, 2.3065, 8.2956, 6.4133, 0.8334, 3.0194, 0.001, 1.8722,
-      0.1666, 0.796, 1.4835, 0.0614, 0.2629, 1.6483, 0.6014, 1.8729, 0.5425,
-      0.0912,
-    ];
+    // Use the addOrUpdateProblem from the hook to persist and update state
+    await addOrUpdateProblem(updatedProblem);
 
-    chrome.storage.local.get(["problems", "dueProblems"], (result) => {
-      const problems: Problem[] = result.problems || [];
-      const dueProblems: Problem[] = result.dueProblems || [];
-
-      let found = false;
-      let updatedProblem: Problem | undefined = undefined;
-
-      const updatedProblems = problems.map((p) => {
-        if (p.id !== currentProblem.id) return p;
-        found = true;
-
-        const lastReview = p.reviewLog[p.reviewLog.length - 1] ?? p.addedAt;
-        const elapsedDays = (now - lastReview) / (1000 * 60 * 60 * 24);
-        const R = Math.exp(-elapsedDays / (p.stability || 1));
-
-        let newStability: number;
-        let newDifficulty: number;
-        let interval: number;
-
-        if (p.reviewLog.length === 0) {
-          const S0 = W[confidence - 1];
-          let D0 = W[4];
-
-          if (confidence === 2) D0 += W[5];
-          else if (confidence === 3) D0 += W[6];
-          else if (confidence === 4) D0 += W[7];
-          else D0 += W[8];
-
-          newStability = S0;
-          newDifficulty = D0;
-          interval = 1;
-        } else {
-          const oldS = p.stability!;
-          const oldD = p.difficulty!;
-
-          if (confidence === 1) {
-            newDifficulty = oldD + W[8];
-            newStability =
-              oldS *
-              (W[9] *
-                Math.pow(newDifficulty, W[10]) *
-                Math.pow(oldS, W[11]) *
-                Math.exp(W[12] * (1 - R)));
-          } else {
-            let dDelta = 0;
-            if (confidence === 2) dDelta = W[5];
-            if (confidence === 3) dDelta = W[6];
-            if (confidence === 4) dDelta = W[7];
-
-            newDifficulty = oldD + dDelta;
-            newStability =
-              oldS *
-              (W[13] *
-                Math.pow(newDifficulty, -W[14]) *
-                Math.pow(oldS, W[15]) *
-                Math.exp(W[16] * (1 - R)));
-          }
-
-          interval = newStability * ((Math.pow(Rd, 1 / W[17]) - 1) / W[18]);
-          interval = Math.max(1, Math.round(interval));
-        }
-
-        updatedProblem = {
-          ...p,
-          stability: newStability,
-          difficulty: newDifficulty,
-          confidence,
-          reviewLog: [...p.reviewLog, now],
-          dueAt: todayMs + interval * 86400000,
-        };
-
-        return updatedProblem;
-      });
-
-      if (!found) {
-        const S0 = W[confidence - 1];
-        let D0 = W[4];
-
-        if (confidence === 2) D0 += W[5];
-        else if (confidence === 3) D0 += W[6];
-        else if (confidence === 4) D0 += W[7];
-        else D0 += W[8];
-
-        const interval = S0 * ((Math.pow(Rd, 1 / W[17]) - 1) / W[18]);
-        const newInterval = Math.max(1, Math.round(interval));
-
-        updatedProblem = {
-          ...currentProblem,
-          addedAt: now,
-          reviewLog: [now],
-          stability: S0,
-          difficulty: D0,
-          confidence,
-          dueAt: todayMs + newInterval * 86400000,
-        };
-
-        updatedProblems.push(updatedProblem);
-      }
-
-      const sorted = [...dueProblems].sort((a, b) => a.dueAt! - b.dueAt!);
-      if (updatedProblem) {
-        const inDue = dueProblems.some((p) => p.id === updatedProblem!.id);
-        const updatedDue = inDue
-          ? dueProblems.map((p) =>
-              p.id === updatedProblem!.id ? updatedProblem! : p,
-            )
-          : [...dueProblems, updatedProblem!];
-
-        setProblemsList(sorted);
-        setProblemsMap(new Map(sorted.map((p) => [p.link, p])));
-        setSolvedProblems((prev) => {
-          const newSet = new Set(prev);
-          newSet.add(updatedProblem!.id);
-          return newSet;
-        });
-
-        chrome.storage.local.set({
-          problems: updatedProblems,
-          dueProblems: updatedDue,
-        });
-      }
-    });
+    // No need to manually update local states here, the `useProblemsData` hook's
+    // storage listener will handle the re-fetch and state update.
   };
 
   return (
@@ -244,7 +115,7 @@ const OverviewScreen = () => {
               label={label}
               value={value}
               color={color}
-              disabled={disabled}
+              disabled={disabledRating}
               handleRate={handleRate}
             />
           ))}
