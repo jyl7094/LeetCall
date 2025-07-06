@@ -71,7 +71,6 @@ export const parseLeetCodeProblem = (): Promise<Problem | null> => {
               dueAt: undefined, // 'dueAt' will be set by the FSRS algorithm after the first review
               stability: undefined, // FSRS parameter, initialized after first review
               difficulty: undefined, // FSRS parameter, initialized after first review
-              // confidence: undefined, // If your Problem type includes 'confidence' it should be initialized here too
             });
           } else {
             resolve(null); // Resolve with null if the parsed result is invalid or incomplete
