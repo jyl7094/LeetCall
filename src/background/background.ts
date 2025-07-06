@@ -7,20 +7,27 @@ const updateDueProblems = () => {
     const now = Date.now();
     const problems: Problem[] = res.problems || [];
     const dueProblems = problems.filter((p) => p.dueAt! <= now);
+    const problemsToSet = {
+      dueProblems: dueProblems,
+      solvedProblems: [], // <--- This line clears solvedProblems for the new "day"
+    };
+    chrome.storage.local.set(problemsToSet, () => {
+      if (chrome.runtime.lastError) {
+        return;
+      }
 
-    chrome.storage.local.set({ dueProblems });
-    const count = dueProblems.length;
-    if (count > 0) {
-      const plural = count === 1 ? "problem" : "problems";
-      chrome.runtime.onInstalled.addListener(() => {
+      const count = dueProblems.length;
+      if (count > 0) {
+        const plural = count === 1 ? "problem" : "problems";
         chrome.notifications.create({
           type: "basic",
           iconUrl: "icon128.png",
           title: "LeetCall",
           message: `You have ${count} ${plural} due for review today.`,
+          priority: 1,
         });
-      });
-    }
+      }
+    });
   });
 };
 
