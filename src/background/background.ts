@@ -1,4 +1,5 @@
 import type { Problem } from "@/types/problem";
+import { getNextMidnightTime } from "@/utils/time";
 
 // Update todaysSet based on current problems and current time
 const updateDueProblems = () => {
@@ -21,22 +22,6 @@ const updateDueProblems = () => {
       });
     }
   });
-};
-
-updateDueProblems();
-// Helper: Calculate next midnight timestamp in ms
-const getNextMidnightTime = () => {
-  const now = new Date();
-  const nextMidnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1,
-    0,
-    0,
-    0,
-    0,
-  );
-  return nextMidnight.getTime();
 };
 
 // Setup daily alarm to refresh todaysSet at midnight and then every 24 hours
