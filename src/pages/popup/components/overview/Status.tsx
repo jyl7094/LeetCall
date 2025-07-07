@@ -1,31 +1,35 @@
-import type { Problem } from "@/types/problem";
 import {
   calculateCircumference,
   calculateProgressPercentage,
   calculateStrokeDasharray,
 } from "@/utils/statusUtils";
+import clsx from "clsx";
+import { useState } from "react";
 
 interface StatusProps {
-  problemsList: Problem[];
-  solvedProblems: Set<string>;
+  dueIds: Set<string>;
+  solvedIds: Set<string>;
 }
 
-const Status = ({ problemsList, solvedProblems }: StatusProps) => {
-  const totalDueProblems = problemsList.length;
-  const numSolvedProblems = solvedProblems.size;
+const Status = ({ dueIds, solvedIds }: StatusProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const numDueProblems = dueIds.size;
+  const numSolvedProblems = solvedIds.size;
   const progress = calculateProgressPercentage(
     numSolvedProblems,
-    totalDueProblems,
-  );
-  const radius = 35;
-  const circumfercence = calculateCircumference(radius);
-  const [dash, circumference] = calculateStrokeDasharray(
-    numSolvedProblems,
-    totalDueProblems,
-    circumfercence,
+    numDueProblems,
   );
 
-  if (totalDueProblems === 0 || numSolvedProblems === totalDueProblems) {
+  const radius = 35;
+  const circumference = calculateCircumference(radius);
+  const [dash, gap] = calculateStrokeDasharray(
+    numSolvedProblems,
+    numDueProblems,
+    circumference,
+  );
+
+  if (numDueProblems === 0 || numSolvedProblems === numDueProblems) {
     return (
       <div className="text-center space-y-2 relative flex flex-col items-center justify-center">
         <div className="text-3xl">🎉</div>
@@ -52,7 +56,13 @@ const Status = ({ problemsList, solvedProblems }: StatusProps) => {
   }
 
   return (
-    <svg width="80" height="80" className="block">
+    <svg
+      width="80"
+      height="80"
+      className="block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <g transform="rotate(-90 40 40)">
         <circle
           cx="40"
@@ -68,17 +78,42 @@ const Status = ({ problemsList, solvedProblems }: StatusProps) => {
           r="35"
           stroke="#2563eb"
           strokeWidth="8"
-          strokeDasharray={`${dash} ${circumference}`}
+          strokeDasharray={`${dash} ${gap}`}
           fill="none"
-          strokeLinecap="round"
+          strokeLinecap={progress < 5 ? "butt" : "round"}
         />
+        {progress === 0 && (
+          <circle
+            cx="75" // 40 + radius
+            cy="40"
+            r="4"
+            fill="#2563eb"
+          />
+        )}
       </g>
       <text
         x="50%"
         y="50%"
         dominantBaseline="middle"
         textAnchor="middle"
-        className="fill-gray-800 font-semibold text-base"
+        className={clsx(
+          "font-semibold text-xl transition-opacity duration-300 ease-in-out",
+          isHovered ? "opacity-0 fill-gray-800" : "opacity-100 fill-gray-800",
+        )}
+        aria-live="polite"
+      >
+        {numSolvedProblems} / {numDueProblems}
+      </text>
+      <text
+        x="50%"
+        y="50%"
+        dominantBaseline="middle"
+        textAnchor="middle"
+        className={clsx(
+          "font-semibold text-xl transition-opacity duration-300 ease-in-out",
+          isHovered ? "opacity-100 fill-gray-800" : "opacity-0 fill-gray-800",
+        )}
+        aria-live="polite"
       >
         {progress}%
       </text>

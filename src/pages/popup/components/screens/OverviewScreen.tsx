@@ -1,5 +1,6 @@
 import { useProblems } from "@/hooks/useProblems";
 import { useUrlChange } from "@/hooks/useUrlChange";
+import Status from "@/pages/popup/components/overview/Status";
 // import type { Problem } from "@/types/problem";
 // import { useState } from "react";
 
@@ -79,14 +80,14 @@ const OverviewScreen = () => {
 
   return (
     <div className="px-1 pt-4 pb-2 space-y-4">
-      {/* <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
-        <Status problemsList={problemsList} solvedProblems={solvedProblems} />
+      <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
+        <Status dueIds={dueIds} solvedIds={solvedIds} />
       </div>
-      <CurrentProblemViewer
+      {/* <CurrentProblemViewer
         currentProblem={currentProblem}
         solvedProblems={solvedProblems}
-      />
-      <div className="space-y-2">
+      /> */}
+      {/* <div className="space-y-2">
         <div className="flex items-center gap-1">
           <span className="font-medium">Rate Your Confidence</span>
           <div className="relative">
@@ -111,8 +112,8 @@ const OverviewScreen = () => {
             />
           ))}
         </div>
-      </div>
-      <div className="space-y-2">
+      </div> */}
+      {/* <div className="space-y-2">
         <div className="font-medium">Upcoming</div>
         {upcoming.length > 0 ? (
           upcoming.map((problem) => (
