@@ -5,6 +5,7 @@ export const useProblems = () => {
   const [problemMap, setProblemMap] = useState<Map<string, Problem>>(new Map());
   const [dueIds, setDueIds] = useState<Set<string>>(new Set());
   const [solvedIds, setSolvedIds] = useState<Set<string>>(new Set());
+  const [dueProblemsArray, setDueProblemsArray] = useState<Problem[]>([]);
 
   const fetchProblems = useCallback(async () => {
     const result = await chrome.storage.local.get([
@@ -18,6 +19,7 @@ export const useProblems = () => {
     setProblemMap(newProblemMap);
 
     const dueProblemsArray: Problem[] = result.dueProblems || [];
+    setDueProblemsArray(dueProblemsArray);
     setDueIds(new Set(dueProblemsArray.map((p) => p.id)));
 
     const solvedProblemsArray: Problem[] = result.solvedProblems || [];
@@ -38,7 +40,6 @@ export const useProblems = () => {
 
   //todo: implement adding a problem to all three maps
 
-  
   // Effect to perform initial data fetch and set up the listener
   useEffect(() => {
     fetchProblems(); // Initial data load when hook mounts
@@ -52,5 +53,6 @@ export const useProblems = () => {
     problemMap,
     dueIds,
     solvedIds,
+    dueProblemsArray,
   };
 };

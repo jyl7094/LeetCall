@@ -9,6 +9,9 @@ const updateDailyProblems = async () => {
   const dueProblems = problems.filter(
     (p) => typeof p.dueAt === "number" && p.dueAt <= now,
   );
+  dueProblems.sort((a, b) => {
+    return a.dueAt! - b.dueAt!;
+  });
 
   const problemsToSet = {
     dueProblems,
