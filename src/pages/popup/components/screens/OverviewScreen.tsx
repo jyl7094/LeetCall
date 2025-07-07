@@ -1,5 +1,7 @@
+import { ratingButtons } from "@/constants/ratingButtons";
 import { useProblems } from "@/hooks/useProblems";
 import { useUrlChange } from "@/hooks/useUrlChange";
+import RatingButton from "@/pages/popup/components/overview/RatingButton";
 import Status from "@/pages/popup/components/overview/Status";
 // import type { Problem } from "@/types/problem";
 // import { useState } from "react";
@@ -14,6 +16,10 @@ const OverviewScreen = () => {
 
   const url = useUrlChange();
   console.log(url, problemMap, dueIds, solvedIds);
+
+  const handleRate = async (confidence: number) => {
+    console.log("hello");
+  };
   // Derived states:
   // const isCurrentProblemSolved = currentProblem
   //   ? solvedIds.has(currentProblem.id)
@@ -87,11 +93,11 @@ const OverviewScreen = () => {
         currentProblem={currentProblem}
         solvedProblems={solvedProblems}
       /> */}
-      {/* <div className="space-y-2">
+      <div className="space-y-2">
         <div className="flex items-center gap-1">
           <span className="font-medium">Rate Your Confidence</span>
           <div className="relative">
-            <span className="group cursor-pointer text-gray-400 hover:text-gray-600">
+            <span className="group cursor-default text-gray-400 hover:text-gray-600">
               &#9432;
               <div className="absolute left-1/2 top-full mt-1 w-64 -translate-x-1/2 rounded-md bg-gray-50 text-xs p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 shadow-sm border border-gray-200 pointer-events-none">
                 Rating marks the problem complete. If new, it’ll be added to
@@ -107,12 +113,12 @@ const OverviewScreen = () => {
               label={label}
               value={value}
               color={color}
-              disabled={disabledRating}
+              disabled={true}
               handleRate={handleRate}
             />
           ))}
         </div>
-      </div> */}
+      </div>
       {/* <div className="space-y-2">
         <div className="font-medium">Upcoming</div>
         {upcoming.length > 0 ? (
