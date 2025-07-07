@@ -13,7 +13,10 @@ export const useUrlChange = () => {
 
     updateUrlFromTab(); // initial
 
-    const handleTabUpdate = (_tabId: number, changeInfo: chrome.tabs.TabChangeInfo) => {
+    const handleTabUpdate = (
+      _tabId: number,
+      changeInfo: chrome.tabs.TabChangeInfo,
+    ) => {
       if (changeInfo.url) updateUrlFromTab();
     };
 
