@@ -80,16 +80,8 @@ const Status = ({ dueIds, solvedIds }: StatusProps) => {
           strokeWidth="8"
           strokeDasharray={`${dash} ${gap}`}
           fill="none"
-          strokeLinecap={progress < 5 ? "butt" : "round"}
+          strokeLinecap="round"
         />
-        {progress === 0 && (
-          <circle
-            cx="75" // 40 + radius
-            cy="40"
-            r="4"
-            fill="#2563eb"
-          />
-        )}
       </g>
       <text
         x="50%"
