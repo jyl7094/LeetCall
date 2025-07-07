@@ -1,8 +1,12 @@
 import { ratingButtons } from "@/constants/ratingButtons";
 import { useProblems } from "@/hooks/useProblems";
 import { useUrlChange } from "@/hooks/useUrlChange";
+import CurrentProblemViewer from "@/pages/popup/components/overview/CurrentProblemViewer";
 import RatingButton from "@/pages/popup/components/overview/RatingButton";
 import Status from "@/pages/popup/components/overview/Status";
+import type { Problem } from "@/types/problem";
+import { parseLeetCodeProblem } from "@/utils/parseLeetCodeProblem";
+import { useEffect, useState } from "react";
 // import type { Problem } from "@/types/problem";
 // import { useState } from "react";
 
@@ -13,13 +17,42 @@ const OverviewScreen = () => {
     solvedIds, // Renamed for clarity
   } = useProblems();
   // const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
-
+  const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
+  const [isRatingDisabled, setIsRatingDisabled] = useState(true);
   const url = useUrlChange();
   console.log(url, problemMap, dueIds, solvedIds);
 
   const handleRate = async (confidence: number) => {
     console.log("hello");
   };
+
+  useEffect(() => {
+    if (!url.startsWith("https://leetcode.com/problems/")) {
+      setCurrentProblem(null);
+      return;
+    }
+
+    const fetchProblem = async () => {
+      try {
+        const problem = await parseLeetCodeProblem(); //todo: check if cause any issues when the problem is already solved
+        setCurrentProblem(problem);
+      } catch {
+        setCurrentProblem(null);
+      }
+    };
+
+    fetchProblem();
+  }, [url]);
+
+  useEffect(() => {
+    if (!currentProblem) {
+      setIsRatingDisabled(true);
+      return;
+    }
+    const isSolved = solvedIds.has(currentProblem.id);
+    setIsRatingDisabled(isSolved);
+  }, [currentProblem, solvedIds]);
+
   // Derived states:
   // const isCurrentProblemSolved = currentProblem
   //   ? solvedIds.has(currentProblem.id)
@@ -89,10 +122,10 @@ const OverviewScreen = () => {
       <div className="flex items-center justify-center border-b pb-4 border-0 border-gray-200">
         <Status dueIds={dueIds} solvedIds={solvedIds} />
       </div>
-      {/* <CurrentProblemViewer
+      <CurrentProblemViewer
         currentProblem={currentProblem}
-        solvedProblems={solvedProblems}
-      /> */}
+        solvedIds={solvedIds}
+      />
       <div className="space-y-2">
         <div className="flex items-center gap-1">
           <span className="font-medium">Rate Your Confidence</span>
@@ -113,7 +146,7 @@ const OverviewScreen = () => {
               label={label}
               value={value}
               color={color}
-              disabled={true}
+              disabled={isRatingDisabled}
               handleRate={handleRate}
             />
           ))}
