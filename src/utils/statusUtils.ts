@@ -35,10 +35,10 @@ export const calculateStrokeDasharray = (
   totalCount: number,
   circumference: number,
 ): [number, number] => {
-  if (totalCount === 0) return [circumference, 0];
-
+  if (totalCount === 0) {
+    return [0, circumference]; // Full circle for 0 total
+  }
   const percent = solvedCount / totalCount;
   const dash = Math.round(percent * circumference);
-  const gap = circumference - dash;
-  return [dash, gap];
+  return [dash, circumference];
 };

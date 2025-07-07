@@ -13,21 +13,24 @@ interface StatusProps {
 
 const Status = ({ dueIds, solvedIds }: StatusProps) => {
   const [isHovered, setIsHovered] = useState(false);
-
   const numDueProblems = dueIds.size;
   const numSolvedProblems = solvedIds.size;
   const progress = calculateProgressPercentage(
     numSolvedProblems,
     numDueProblems,
   );
+  const radius = 55;
+  const strokeWidth = 10;
 
-  const radius = 35;
-  const circumference = calculateCircumference(radius);
-  const [dash, gap] = calculateStrokeDasharray(
+  const circumfercence = calculateCircumference(radius);
+  const [dash, circumference] = calculateStrokeDasharray(
     numSolvedProblems,
     numDueProblems,
-    circumference,
+    circumfercence,
   );
+
+  const svgSize = (radius + strokeWidth / 2) * 2;
+  const center = svgSize / 2; // Center point for circles and text
 
   if (numDueProblems === 0 || numSolvedProblems === numDueProblems) {
     return (
@@ -57,28 +60,29 @@ const Status = ({ dueIds, solvedIds }: StatusProps) => {
 
   return (
     <svg
-      width="80"
-      height="80"
-      className="block"
+      width={svgSize}
+      height={svgSize}
+      className="block cursor-default"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      role="img"
     >
-      <g transform="rotate(-90 40 40)">
+      <g transform={`rotate(-90 ${center} ${center})`}>
         <circle
-          cx="40"
-          cy="40"
-          r="35"
+          cx={center}
+          cy={center}
+          r={radius}
           stroke="#e5e7eb"
-          strokeWidth="8"
+          strokeWidth={strokeWidth}
           fill="none"
         />
         <circle
-          cx="40"
-          cy="40"
-          r="35"
+          cx={center}
+          cy={center}
+          r={radius}
           stroke="#2563eb"
-          strokeWidth="8"
-          strokeDasharray={`${dash} ${gap}`}
+          strokeWidth={strokeWidth}
+          strokeDasharray={`${dash} ${circumference}`}
           fill="none"
           strokeLinecap="round"
         />
@@ -94,7 +98,7 @@ const Status = ({ dueIds, solvedIds }: StatusProps) => {
         )}
         aria-live="polite"
       >
-        {numSolvedProblems} / {numDueProblems}
+        {numSolvedProblems}/{numDueProblems}
       </text>
       <text
         x="50%"
