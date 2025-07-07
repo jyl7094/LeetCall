@@ -9,8 +9,7 @@ export const LEETCALL_BUTTON_STYLES = `
         border-radius: 6px;
         transition: background 0.15s, border-color 0.15s, color 0.15s;
         cursor: pointer;
-        min-width: 56px;
-        max-width: 90px;
+        min-width: 65px;
         letter-spacing: 0.1px;
       }
       .leetcall-button:hover {
