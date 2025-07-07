@@ -10,7 +10,13 @@ import { parseLeetCodeProblem } from "@/utils/parseLeetCodeProblem";
 import { useEffect, useMemo, useState } from "react";
 
 const OverviewScreen = () => {
-  const { problemMap, dueIds, solvedIds, dueProblemsArray } = useProblems();
+  const {
+    problemMap,
+    dueIds,
+    solvedIds,
+    dueProblemsArray,
+    updateProblemsAfterRating,
+  } = useProblems();
   const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
   const [isRatingDisabled, setIsRatingDisabled] = useState(true);
   const url = useUrlChange();
@@ -31,7 +37,9 @@ const OverviewScreen = () => {
   }, [dueProblemsArray, solvedIds, currentProblem]);
 
   const handleRate = async (confidence: number) => {
-    console.log(confidence);
+    if (!currentProblem || solvedIds.has(currentProblem.id)) return;
+    updateProblemsAfterRating(currentProblem);
+    console.log(confidence)
   };
 
   useEffect(() => {
