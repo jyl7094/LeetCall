@@ -31,7 +31,7 @@ const OverviewScreen = () => {
   }, [dueProblemsArray, solvedIds, currentProblem]);
 
   const handleRate = async (confidence: number) => {
-    console.log("hello");
+    console.log(confidence);
   };
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const OverviewScreen = () => {
       setCurrentProblem(null);
       return;
     }
-    
+
     const fetchProblem = async () => {
       try {
         const parsedProblem = await parseLeetCodeProblem();

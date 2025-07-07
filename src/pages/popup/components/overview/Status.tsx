@@ -19,7 +19,7 @@ const Status = ({ dueIds, solvedIds }: StatusProps) => {
     numSolvedProblems,
     numDueProblems,
   );
-  const radius = 55;
+  const radius = 45;
   const strokeWidth = 10;
 
   const circumfercence = calculateCircumference(radius);
