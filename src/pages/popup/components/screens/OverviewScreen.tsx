@@ -148,5 +148,5 @@ export default OverviewScreen;
   // If you want to log each individually:
   console.log("problems:", result.problems);
   console.log("dueProblems:", result.dueProblems);
-  console.log("solvedProblems:", result.sovledProblems);
+  console.log("solvedProblems:", result.solvedProblems);
 }); */
