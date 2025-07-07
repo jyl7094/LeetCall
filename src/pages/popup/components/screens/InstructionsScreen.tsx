@@ -18,7 +18,7 @@ const InstructionsScreen = () => (
           rel="noopener noreferrer"
           className="text-blue-600 hover:underline"
         >
-          the LeetCode Problem Set
+          LeetCode
         </a>{" "}
         or problem lists by topic, company, favorites, or saved. Click{" "}
         <strong>Add</strong> to save problems to your deck.
