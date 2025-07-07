@@ -67,7 +67,7 @@ export const parseLeetCodeProblem = (): Promise<Problem | null> => {
             resolve({
               ...result,
               reviewLog: [], // Initialize empty review log
-              addedAt: Date.now(), // Set the timestamp when the problem was first added/parsed
+              addedAt: undefined, // Set the timestamp when the problem was first added/parsed
               dueAt: undefined, // 'dueAt' will be set by the FSRS algorithm after the first review
               stability: undefined, // FSRS parameter, initialized after first review
               difficulty: undefined, // FSRS parameter, initialized after first review

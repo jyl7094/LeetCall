@@ -6,6 +6,7 @@ import ProblemButton from "@/pages/popup/components/overview/ProblemButton";
 import RatingButton from "@/pages/popup/components/overview/RatingButton";
 import Status from "@/pages/popup/components/overview/Status";
 import type { Problem } from "@/types/problem";
+import { calculateFsrsParams } from "@/utils/fsrs";
 import { parseLeetCodeProblem } from "@/utils/parseLeetCodeProblem";
 import { useEffect, useMemo, useState } from "react";
 
@@ -38,8 +39,16 @@ const OverviewScreen = () => {
 
   const handleRate = async (confidence: number) => {
     if (!currentProblem || solvedIds.has(currentProblem.id)) return;
-    updateProblemsAfterRating(currentProblem);
-    console.log(confidence)
+    const problemToUpdate = {
+      ...currentProblem,
+      addedAt: currentProblem.addedAt ? currentProblem.addedAt : Date.now(),
+    };
+    const updatedProblem = calculateFsrsParams(
+      problemToUpdate,
+      confidence,
+      Date.now(),
+    );
+    updateProblemsAfterRating(updatedProblem);
   };
 
   useEffect(() => {

@@ -26,38 +26,29 @@ export const calculateFsrsParams = (
   let newDifficulty: number;
   let intervalDays: number;
 
-  const todayStartMs = new Date();
-  todayStartMs.setHours(0, 0, 0, 0);
-
   if (problem.reviewLog.length === 0) {
     // First review
-    const S0 = W[confidence - 1];
-    let D0 = W[4];
+    const S0 = W[confidence - 1]; // initial stability
+    let D0 = W[4]; // base difficulty
 
-    if (confidence === 2) D0 += W[5];
-    else if (confidence === 3) D0 += W[6];
-    else if (confidence === 4) D0 += W[7];
-    else D0 += W[8];
+    D0 += W[5] * (confidence - 3); // difficulty adjustment based on confidence
 
     newStability = S0;
     newDifficulty = D0;
-    intervalDays = 1; // Initial interval
+    intervalDays = 1; // first interval
   } else {
-    // Subsequent reviews
+    // Subsequent review
     const oldS = problem.stability!;
     const oldD = problem.difficulty!;
-
-    // --- FIX IS HERE ---
-    // Access the 'reviewedAt' property from the last review log entry
     const lastReviewTimestamp =
       problem.reviewLog[problem.reviewLog.length - 1].reviewedAt;
 
-    const elapsedDays = (reviewTimestamp - lastReviewTimestamp) / MS_PER_DAY; // Use lastReviewTimestamp
-    const R = Math.exp(-elapsedDays / (oldS || 1)); // Ensure oldS is not 0 for division
+    const elapsedDays = (reviewTimestamp - lastReviewTimestamp) / MS_PER_DAY;
+    const R = Math.exp(-elapsedDays / oldS);
 
     if (confidence === 1) {
-      // Again (lowest confidence)
-      newDifficulty = oldD + W[8];
+      // Again (failure)
+      newDifficulty = oldD + W[8]; // usually a penalty
       newStability =
         oldS *
         (W[9] *
@@ -65,13 +56,10 @@ export const calculateFsrsParams = (
           Math.pow(oldS, W[11]) *
           Math.exp(W[12] * (1 - R)));
     } else {
-      // Hard, Good, Easy
-      let dDelta = 0;
-      if (confidence === 2) dDelta = W[5];
-      else if (confidence === 3) dDelta = W[6];
-      else if (confidence === 4) dDelta = W[7];
+      // Hard / Good / Easy
+      newDifficulty = oldD + W[5] * (confidence - 3);
+      newDifficulty = Math.max(1.0, Math.min(10.0, newDifficulty)); // clamp difficulty
 
-      newDifficulty = oldD + dDelta;
       newStability =
         oldS *
         (W[13] *
@@ -81,7 +69,7 @@ export const calculateFsrsParams = (
     }
 
     intervalDays = newStability * ((Math.pow(Rd, 1 / W[17]) - 1) / W[18]);
-    intervalDays = Math.max(1, Math.round(intervalDays)); // Interval must be at least 1 day
+    intervalDays = Math.max(1, Math.round(intervalDays));
   }
 
   return {
@@ -91,7 +79,7 @@ export const calculateFsrsParams = (
     reviewLog: [
       ...problem.reviewLog,
       { reviewedAt: reviewTimestamp, confidence },
-    ], // Add new entry to review log
-    dueAt: todayStartMs.getTime() + intervalDays * MS_PER_DAY,
+    ],
+    dueAt: reviewTimestamp + intervalDays * MS_PER_DAY,
   };
 };
