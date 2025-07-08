@@ -1,11 +1,11 @@
 import type { Problem } from "@/types/problem";
-import { getEndOfTodayTimestamp, getNextMidnightTime } from "@/utils/time";
+import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
 const updateDailyProblems = async () => {
   const result = await chrome.storage.local.get(["problems"]);
   const problems: Problem[] = result.problems || [];
-  const endOfToday = getEndOfTodayTimestamp();
+  const endOfToday = getNextMidnightTime();
   const dueProblems = problems.filter(
     (p) => typeof p.dueAt === "number" && p.dueAt < endOfToday,
   );
