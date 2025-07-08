@@ -39,14 +39,24 @@ const OverviewScreen = () => {
 
   const handleRate = async (confidence: number) => {
     if (!currentProblem || solvedIds.has(currentProblem.id)) return;
+    const now = new Date();
+    const localNow = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+      now.getMilliseconds(),
+    ).getTime();
     const problemToUpdate = {
       ...currentProblem,
-      addedAt: currentProblem.addedAt ? currentProblem.addedAt : Date.now(),
+      addedAt: currentProblem.addedAt ? currentProblem.addedAt : localNow,
     };
     const updatedProblem = calculateFsrsParams(
       problemToUpdate,
       confidence,
-      Date.now(),
+      localNow,
     );
     updateProblemsAfterRating(updatedProblem);
   };

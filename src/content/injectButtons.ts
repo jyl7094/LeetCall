@@ -98,13 +98,22 @@ const injectButtons = async () => {
       button.blur();
 
       const link = normalizeLeetCodeProblemUrl(getCanonicalProblemLink(row));
-      const now = Date.now();
+      const now = new Date();
+      const localNow = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ).getTime();
       const problem: Problem = {
         id,
         title: problemTitle,
         link,
-        addedAt: now,
-        dueAt: now,
+        addedAt: localNow,
+        dueAt: localNow,
         reviewLog: [],
         stability: undefined,
         difficulty: undefined,
