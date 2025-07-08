@@ -33,16 +33,29 @@ const updateDailyProblems = async () => {
   }
 };
 
-// Setup daily alarm to refresh todaysSet at midnight and then every 24 hours
-chrome.alarms.create("dailyUpdate", {
-  when: getNextMidnightTime(),
-  periodInMinutes: 24 * 60,
-});
-
+// Alarm Setup and Listener
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "dailyUpdate") {
     updateDailyProblems();
   }
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.alarms.create("dailyUpdate", {
+    when: getNextMidnightTime(),
+    periodInMinutes: 24 * 60,
+  });
+
+  updateDailyProblems();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  chrome.alarms.create("dailyUpdate", {
+    when: getNextMidnightTime(),
+    periodInMinutes: 24 * 60,
+  });
+
+  updateDailyProblems();
 });
 
 // Inject buttons into LeetCode problem pages
