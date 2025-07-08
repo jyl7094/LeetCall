@@ -133,7 +133,7 @@ const OverviewScreen = () => {
             />
           ))
         ) : (
-          <div className="text-gray-500">No upcoming problems</div>
+          <div className="text-gray-500 mb-2">No upcoming problems</div>
         )}
       </div>
     </div>
