@@ -1,17 +1,17 @@
 import type { Problem } from "@/types/problem";
-import { getNextMidnightTime } from "@/utils/time";
+import { getEndOfTodayTimestamp, getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
 const updateDailyProblems = async () => {
   const result = await chrome.storage.local.get(["problems"]);
-  const now = Date.now();
   const problems: Problem[] = result.problems || [];
+  const endOfToday = getEndOfTodayTimestamp();
   const dueProblems = problems.filter(
-    (p) => typeof p.dueAt === "number" && p.dueAt <= now,
+    (p) => typeof p.dueAt === "number" && p.dueAt < endOfToday,
   );
-  dueProblems.sort((a, b) => {
-    return a.dueAt! - b.dueAt!;
-  });
+
+  // Sort by due date ascending
+  dueProblems.sort((a, b) => a.dueAt! - b.dueAt!);
 
   const problemsToSet = {
     dueProblems,
