@@ -1,5 +1,5 @@
 import type { Problem } from "@/types/problem";
-import { setBadge, setNotification } from "@/utils/notifications";
+import { clearBadge, setBadge, setNotification } from "@/utils/notifications";
 import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
@@ -25,8 +25,27 @@ const updateDailyProblems = async () => {
   if (count > 0) {
     setNotification(count);
     setBadge();
+  } else {
+    clearBadge();
   }
 };
+
+// --- Listeners ---
+chrome.storage.onChanged.addListener(async (changes, area) => {
+  if (area === "local" && (changes.dueProblems || changes.solvedProblems)) {
+    const { dueProblems = [], solvedProblems = [] } =
+      await chrome.storage.local.get(["dueProblems", "solvedProblems"]);
+
+    const dueCount = dueProblems.length;
+    const solvedCount = solvedProblems.length;
+
+    if (dueCount === 0 || dueCount === solvedCount) {
+      clearBadge();
+    } else {
+      setBadge();
+    }
+  }
+});
 
 // Alarm Setup and Listener
 chrome.alarms.onAlarm.addListener((alarm) => {
