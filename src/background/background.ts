@@ -1,4 +1,5 @@
 import type { Problem } from "@/types/problem";
+import { setNotification } from "@/utils/notifications";
 import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
@@ -22,14 +23,7 @@ const updateDailyProblems = async () => {
 
   const count = dueProblems.length;
   if (count > 0) {
-    const plural = count === 1 ? "problem" : "problems";
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: "icon128.png",
-      title: "LeetCall",
-      message: `You have ${count} ${plural} due for review today.`,
-      priority: 1,
-    });
+    setNotification(count);
   }
 };
 
