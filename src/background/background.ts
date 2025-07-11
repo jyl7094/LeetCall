@@ -1,4 +1,5 @@
 import type { Problem } from "@/types/problem";
+import { setupDailyAlarm } from "@/utils/alarms";
 import { clearBadge, setBadge, setNotification } from "@/utils/notifications";
 import { getNextMidnightTime } from "@/utils/time";
 
@@ -36,10 +37,11 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
     const { dueProblems = [], solvedProblems = [] } =
       await chrome.storage.local.get(["dueProblems", "solvedProblems"]);
 
-    const dueCount = dueProblems.length;
-    const solvedCount = solvedProblems.length;
+    const dueIds = new Set(dueProblems.map((p: Problem) => p.id));
+    const solvedIds = new Set(solvedProblems);
+    const allDueSolved = [...dueIds].every((id) => solvedIds.has(id));
 
-    if (dueCount === 0 || dueCount === solvedCount) {
+    if (dueIds.size === 0 || allDueSolved) {
       clearBadge();
     } else {
       setBadge();
@@ -55,20 +57,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create("dailyUpdate", {
-    when: getNextMidnightTime(),
-    periodInMinutes: 24 * 60,
-  });
-
+  setupDailyAlarm();
   updateDailyProblems();
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.alarms.create("dailyUpdate", {
-    when: getNextMidnightTime(),
-    periodInMinutes: 24 * 60,
-  });
-
+  setupDailyAlarm();
   updateDailyProblems();
 });
 
