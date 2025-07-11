@@ -8,3 +8,12 @@ export const setNotification = (count: number) => {
     priority: 1,
   });
 };
+
+export const setBadge = () => {
+  chrome.action.setBadgeText({ text: "DUE" });
+  chrome.action.setBadgeBackgroundColor({ color: "#3c9eed" });
+};
+
+export const clearBadge = () => {
+  chrome.action.setBadgeText({ text: "" });
+};

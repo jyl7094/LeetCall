@@ -1,5 +1,5 @@
 import type { Problem } from "@/types/problem";
-import { setNotification } from "@/utils/notifications";
+import { setBadge, setNotification } from "@/utils/notifications";
 import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
@@ -24,6 +24,7 @@ const updateDailyProblems = async () => {
   const count = dueProblems.length;
   if (count > 0) {
     setNotification(count);
+    setBadge();
   }
 };
 
