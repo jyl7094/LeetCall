@@ -18,3 +18,12 @@ export const setBadge = () => {
 export const clearBadge = () => {
   chrome.action.setBadgeText({ text: "" });
 };
+
+export const updateNotification = (count: number) => {
+  if (count > 0) {
+    setNotification(count);
+    setBadge();
+  } else {
+    clearBadge();
+  }
+};

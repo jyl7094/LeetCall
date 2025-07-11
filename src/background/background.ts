@@ -1,34 +1,54 @@
 import type { Problem } from "@/types/problem";
 import { setupDailyAlarm } from "@/utils/alarms";
-import { clearBadge, setBadge, setNotification } from "@/utils/notifications";
+import {
+  clearBadge,
+  setBadge,
+  updateNotification,
+} from "@/utils/notifications";
 import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
 const updateDailyProblems = async () => {
-  const result = await chrome.storage.local.get(["problems"]);
+  const result = await chrome.storage.local.get([
+    "problems",
+    "dueProblems",
+    "lastUpdated",
+    "solvedProblems",
+  ]);
+
   const problems: Problem[] = result.problems || [];
+  const lastUpdated: string = result.lastUpdated || "";
+  let dueProblems: Problem[] = result.dueProblems || [];
+  const solvedIds: string[] = result.solvedProblems || [];
+
+  const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+  if (lastUpdated === today) {
+    const dueCount = dueProblems.length;
+    const solvedCount = solvedIds.length;
+    const count = dueCount - solvedCount;
+    updateNotification(count);
+    return;
+  }
+
   const endOfToday = getNextMidnightTime();
-  const dueProblems = problems.filter(
+
+  dueProblems = problems.filter(
     (p) => typeof p.dueAt === "number" && p.dueAt < endOfToday,
   );
 
-  // Sort by due date ascending
   dueProblems.sort((a, b) => a.dueAt! - b.dueAt!);
 
   const problemsToSet = {
     dueProblems,
     solvedProblems: [], // reset for the day
+    lastUpdated: today,
   };
 
   await chrome.storage.local.set(problemsToSet);
 
   const count = dueProblems.length;
-  if (count > 0) {
-    setNotification(count);
-    setBadge();
-  } else {
-    clearBadge();
-  }
+  updateNotification(count);
 };
 
 // --- Listeners ---
