@@ -11,7 +11,8 @@ export const setNotification = (count: number) => {
 
 export const setBadge = () => {
   chrome.action.setBadgeText({ text: "DUE" });
-  chrome.action.setBadgeBackgroundColor({ color: "#3c9eed" });
+  chrome.action.setBadgeTextColor({ color: "#f3f4f6" });
+  chrome.action.setBadgeBackgroundColor({ color: "#e17015" });
 };
 
 export const clearBadge = () => {
