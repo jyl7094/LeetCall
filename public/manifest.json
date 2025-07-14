@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "LeetCall",
   "version": "1.0.0",
-  "description": "A productivity tool for LeetCode. Create a custom list of problems, grade your confidence level, and get intelligent reminders on when to revisit them based on spaced repetition.",
+  "description": "A LeetCode productivity tool to track problems, rate your confidence, and get smart review reminders using spaced repetition.",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
