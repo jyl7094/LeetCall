@@ -81,6 +81,42 @@ export const useProblems = () => {
     [problemMap, solvedIds, dueIds, dueProblemsArray],
   );
 
+  const deleteProblem = useCallback(
+    async (id: string) => {
+      // Create new sets/maps to trigger state updates
+      const updatedProblemMap = new Map(problemMap);
+      updatedProblemMap.delete(id);
+
+      const updatedDueIds = new Set(dueIds);
+      updatedDueIds.delete(id);
+
+      const updatedSolvedIds = new Set(solvedIds);
+      updatedSolvedIds.delete(id);
+
+      // Filter out the deleted problem from the dueProblemsArray
+      const updatedDueProblemsArray = dueProblemsArray.filter(
+        (p) => p.id !== id,
+      );
+
+      // Update state
+      setProblemMap(updatedProblemMap);
+      setDueIds(updatedDueIds);
+      setSolvedIds(updatedSolvedIds);
+      setDueProblemsArray(updatedDueProblemsArray);
+
+      // Mark self-update to prevent triggering fetchProblems
+      isSelfUpdateRef.current = true;
+
+      // Persist changes to Chrome local storage
+      await chrome.storage.local.set({
+        problems: Array.from(updatedProblemMap.values()),
+        solvedProblems: Array.from(updatedSolvedIds),
+        dueProblems: updatedDueProblemsArray,
+      });
+    },
+    [problemMap, dueIds, solvedIds, dueProblemsArray], // Added dueProblemsArray to dependencies
+  );
+
   // Effect to perform initial data fetch and set up the listener
   useEffect(() => {
     fetchProblems(); // Initial data load when hook mounts
@@ -96,5 +132,6 @@ export const useProblems = () => {
     solvedIds,
     dueProblemsArray,
     updateProblemsAfterRating,
+    deleteProblem,
   };
 };
