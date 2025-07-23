@@ -12,13 +12,7 @@
   "action": {
     "default_popup": "src/pages/popup/index.html"
   },
-  "permissions": [
-    "storage",
-    "scripting",
-    "webNavigation",
-    "alarms",
-    "notifications"
-  ],
+  "permissions": ["storage", "scripting", "alarms", "notifications"],
   "host_permissions": [
     "https://leetcode.com/problemset/*",
     "https://leetcode.com/company/*",
@@ -27,5 +21,12 @@
   ],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }

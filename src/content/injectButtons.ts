@@ -144,3 +144,29 @@ observer.observe(document.body, { childList: true, subtree: true });
 window.addEventListener("beforeunload", () => {
   observer.disconnect();
 });
+
+let currentUrl = location.href;
+
+const observeUrlChange = () => {
+  const observer = new MutationObserver(() => {
+    if (location.href !== currentUrl) {
+      currentUrl = location.href;
+      handleUrlChange(currentUrl);
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+};
+
+const handleUrlChange = (url: string) => {
+  const shouldInject =
+    url.startsWith("https://leetcode.com/problemset/") ||
+    url.startsWith("https://leetcode.com/company/") ||
+    url.startsWith("https://leetcode.com/problem-list/");
+
+  if (shouldInject) {
+    injectButtons(); // replace with your actual injection logic
+  }
+};
+
+observeUrlChange();
