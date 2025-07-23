@@ -1,4 +1,4 @@
-import { LEETCALL_BUTTON_STYLES } from "@/constants/leetcallButtonStyles";
+import { LEETCALL_BUTTON_STYLES } from "@/constants/leetcall-button-styles";
 import type { Problem } from "@/types/problem";
 
 const addButtonStyle = () => {
