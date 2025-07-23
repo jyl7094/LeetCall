@@ -1,11 +1,17 @@
 export const setupSettings = async () => {
-  const { settings } = await chrome.storage.local.get("settings");
+  const result = await new Promise<{
+    settings?: { sendNotifications: boolean };
+  }>((resolve) => {
+    chrome.storage.local.get("settings", (res) => resolve(res));
+  });
+
+  const settings = result.settings;
 
   if (!settings || typeof settings.sendNotifications !== "boolean") {
-    await chrome.storage.local.set({
-      settings: {
-        sendNotifications: true,
-      },
+    await new Promise<void>((resolve) => {
+      chrome.storage.local.set({ settings: { sendNotifications: true } }, () =>
+        resolve(),
+      );
     });
   }
 };
