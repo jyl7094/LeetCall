@@ -1,4 +1,4 @@
-import { ScreenState } from "@/constants/screenState";
+import { ScreenState } from "@/constants/screen-state";
 import { useScreenState } from "@/hooks/useScreenState";
 import Header from "@/pages/popup/components/common/Header";
 import InstructionsScreen from "@/pages/popup/components/screens/InstructionsScreen";

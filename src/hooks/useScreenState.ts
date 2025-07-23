@@ -1,4 +1,4 @@
-import { ScreenState } from "@/constants/screenState";
+import { ScreenState } from "@/constants/screen-state";
 import { useEffect, useState } from "react";
 import { useUrlChange } from "./useUrlChange";
 

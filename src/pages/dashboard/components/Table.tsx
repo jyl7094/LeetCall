@@ -1,4 +1,4 @@
-import { ratingButtons } from "@/constants/ratingButtons";
+import { ratingButtons } from "@/constants/rating-buttons";
 import { useProblems } from "@/hooks/useProblems";
 
 const Table = () => {
