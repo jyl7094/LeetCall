@@ -1,6 +1,6 @@
 # LeetCall Chrome Extension
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Description:** A productivity tool for LeetCode. Create a custom list of problems, grade your confidence level, and get intelligent reminders on when to revisit them based on spaced repetition.
 
 ## Features
