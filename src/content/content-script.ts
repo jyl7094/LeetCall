@@ -147,7 +147,7 @@ const safeInjectButtons = () => {
 
 window.addEventListener("load", () => {
   safeInjectButtons();
-  setTimeout(injectButtons, 1000);
+  setTimeout(safeInjectButtons, 1000);
 });
 
 const observer = new MutationObserver(() => {
