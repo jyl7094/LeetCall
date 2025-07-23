@@ -10,24 +10,24 @@ const App = () => {
 
   return (
     <div className="p-4 max-w-5xl mx-auto space-y-6">
-      {/* Pill-style Tabs */}
-      <div className="flex space-x-2 justify-center mb-6">
+      {/* Tabs - left aligned, square-ish, gray theme */}
+      <div className="flex space-x-2 mb-4">
         <button
           onClick={() => setActiveTab("dashboard")}
-          className={`px-4 py-1.5 rounded-full transition-colors ${
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === "dashboard"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              ? "bg-gray-300 text-gray-900"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           Dashboard
         </button>
         <button
           onClick={() => setActiveTab("settings")}
-          className={`px-4 py-1.5 rounded-full transition-colors ${
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === "settings"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              ? "bg-gray-300 text-gray-900"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
           Settings

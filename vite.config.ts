@@ -12,7 +12,7 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, "src/pages/popup/index.html"),
         dashboard: resolve(__dirname, "src/pages/dashboard/index.html"),
-        injectButtons: resolve(__dirname, "src/content/injectButtons.ts"),
+        contentScript: resolve(__dirname, "src/content/content-script.ts"),
         background: resolve(__dirname, "src/background/background.ts"),
       },
       output: {
