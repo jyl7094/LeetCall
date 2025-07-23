@@ -5,6 +5,7 @@ import {
   setBadge,
   updateNotification,
 } from "@/utils/notifications";
+import { setupSettings } from "@/utils/settings";
 import { getNextMidnightTime } from "@/utils/time";
 
 // Update daily problems and notify user
@@ -77,6 +78,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
+  setupSettings();
   setupDailyAlarm();
   updateDailyProblems();
 });
