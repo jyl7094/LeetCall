@@ -23,3 +23,5 @@
 - Click the extension icon to open the popup.
 - Manage your LeetCode problem list and track your confidence.
 - Get spaced repetition reminders based on your progress.
+
+Link: https://chromewebstore.google.com/detail/leetcall/kbmefcdgoecchdnaegafelgfeiajbpbf
