@@ -26,3 +26,6 @@
 
 ## Link
 https://chromewebstore.google.com/detail/leetcall/kbmefcdgoecchdnaegafelgfeiajbpbf
+
+## License
+LeetCall is licensed under the [MIT License](LICENSE).
